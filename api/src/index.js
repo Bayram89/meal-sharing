@@ -31,6 +31,9 @@ app.get("/test", (req, res) => {
 apiRouter.get("/future-meals", async (req, res) => {
   const futureMealsQuery = "SELECT * FROM meal WHERE `when` > NOW()";
   const [futureMeals] = await knex.raw(futureMealsQuery);
+    if (!futureMeals || futureMeals.length === 0) {
+    return res.status(404).json({ error: "No meal found" });
+  }
   res.json(futureMeals);
 });
 
@@ -38,6 +41,9 @@ apiRouter.get("/future-meals", async (req, res) => {
 apiRouter.get("/past-meals", async (req, res) => {
   const pastMealsQuery = "SELECT * FROM meal WHERE `when` < NOW()";
   const [pastMeals] = await knex.raw(pastMealsQuery);
+    if (!pastMeals || pastMeals.length === 0) {
+    return res.status(404).json({ error: "No meal found" });
+  }
   res.json(pastMeals);
 });
 
@@ -45,6 +51,9 @@ apiRouter.get("/past-meals", async (req, res) => {
 apiRouter.get("/meals", async (req, res) => {
   const mealQuery = "SELECT * FROM meal";
   const [meal] = await knex.raw(mealQuery);
+    if (!meal || meal.length === 0) {
+    return res.status(404).json({ error: "No meal found" });
+  }
   res.json(meal);
 });
 
@@ -52,6 +61,9 @@ apiRouter.get("/meals", async (req, res) => {
 apiRouter.get("/first-meal", async (req, res) => {
   const firstMealQuery = "SELECT * FROM meal ORDER BY id LIMIT 1";
   const [firstMeal] = await knex.raw(firstMealQuery);
+    if (!firstMeal || firstMeal.length === 0) {
+    return res.status(404).json({ error: "No meal found" });
+  }
   res.json(firstMeal);
 });
 
@@ -59,6 +71,9 @@ apiRouter.get("/first-meal", async (req, res) => {
 apiRouter.get("/last-meal", async (req, res) => {
   const lastMealQuery = "SELECT * FROM meal ORDER BY id DESC LIMIT 1";
   const [lastMeal] = await knex.raw(lastMealQuery);
+  if (!lastMeal || lastMeal.length === 0) {
+    return res.status(404).json({ error: "No meal found" });
+  }
   res.json(lastMeal);
 });
 
