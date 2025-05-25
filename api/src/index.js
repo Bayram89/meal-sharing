@@ -30,51 +30,51 @@ app.get("/test", (req, res) => {
 // 1. The route to get all meals in the FUTURE
 apiRouter.get("/future-meals", async (req, res) => {
   const futureMealsQuery = "SELECT * FROM meal WHERE `when` > NOW()";
-  const [futureMeals] = await knex.raw(futureMealsQuery);
+  const futureMeals = await knex.raw(futureMealsQuery);
     if (!futureMeals || futureMeals.length === 0) {
-    return res.status(404).json({ error: "No meal found" });
+    return res.status(404).json({ error: "No future meal found" });
   }
-  res.json(futureMeals);
+  res.json(futureMeals[0]);
 });
 
 // 2. The route to get all meals in the PAST
 apiRouter.get("/past-meals", async (req, res) => {
   const pastMealsQuery = "SELECT * FROM meal WHERE `when` < NOW()";
-  const [pastMeals] = await knex.raw(pastMealsQuery);
+  const pastMeals = await knex.raw(pastMealsQuery);
     if (!pastMeals || pastMeals.length === 0) {
-    return res.status(404).json({ error: "No meal found" });
+    return res.status(404).json({ error: "No past meal found" });
   }
-  res.json(pastMeals);
+  res.json(pastMeals[0]);
 });
 
 // 3. The route to get all meals sorted by ID
 apiRouter.get("/meals", async (req, res) => {
   const mealQuery = "SELECT * FROM meal";
-  const [meal] = await knex.raw(mealQuery);
+  const meal = await knex.raw(mealQuery);
     if (!meal || meal.length === 0) {
-    return res.status(404).json({ error: "No meal found" });
+    return res.status(404).json({ error: "No meals found" });
   }
-  res.json(meal);
+  res.json(meal[0]);
 });
 
 // 4. The route to get the FIRST meal
 apiRouter.get("/first-meal", async (req, res) => {
   const firstMealQuery = "SELECT * FROM meal ORDER BY id LIMIT 1";
-  const [firstMeal] = await knex.raw(firstMealQuery);
+  const firstMeal = await knex.raw(firstMealQuery);
     if (!firstMeal || firstMeal.length === 0) {
-    return res.status(404).json({ error: "No meal found" });
+    return res.status(404).json({ error: "No first meal found" });
   }
-  res.json(firstMeal);
+  res.json(firstMeal[0]);
 });
 
 // 5. The route to get the LAST meal
 apiRouter.get("/last-meal", async (req, res) => {
   const lastMealQuery = "SELECT * FROM meal ORDER BY id DESC LIMIT 1";
-  const [lastMeal] = await knex.raw(lastMealQuery);
+  const lastMeal = await knex.raw(lastMealQuery);
   if (!lastMeal || lastMeal.length === 0) {
-    return res.status(404).json({ error: "No meal found" });
+    return res.status(404).json({ error: "No last meal found" });
   }
-  res.json(lastMeal);
+  res.json(lastMeal[0]);
 });
 
 app.listen(process.env.PORT, () => {
@@ -95,14 +95,17 @@ apiRouter.get("/search-meals", async (req, res) => {
   const name = req.query.name;
   const mealQuery = `SELECT * FROM meal WHERE title LIKE '%${name}%'`;
   // const mealQuery = "SELECT * FROM meal WHERE name LIKE '%" + name + "%'";
-  const [meal] = await knex.raw(mealQuery);
-  res.json(meal);
+  const meal = await knex.raw(mealQuery);
+  res.json(meal[0]);
 });
 
 // 1. Route to get all meals
 apiRouter.get("/meals", async (req, res) => {
   const mealQuery = `SELECT * FROM meal`;
   const meal = await knex.raw(mealQuery);
+    if (!meal || meal.length === 0) {
+    return res.status(404).json({ error: "No meals found" });
+  }
   res.json(meal[0]);
 });
 
@@ -133,14 +136,21 @@ apiRouter.get("/meals/:id", async (req, res) => {
   const mealQuery = `SELECT * FROM meal WHERE id = ${mealId}`;
   const mealQuery2 = "SELECT * FROM meal WHERE id = " + mealId + ";";
 
-  const meal = await knex.raw(mealQuery);
-  res.json(meal[0]);
+  const [meals] = await knex.raw(mealQuery); //
+  const [firstMeal] = meals; 
+  /*
+ [ { } ] 
+  */
+  if (!firstMeal) {
+    return res.status(404).json({ error: "No meals found" });
+  }
+  res.json(firstMeal);
 });
 
 // 4. Route to update a meal by ID
 apiRouter.put("/meals/:id", async (req, res) => {
   const mealId = req.params.id;
-  const location = req.body.ISTANBUL;
+  const location = req.body.location;
 
   // Construct the SQL query to update the meal
 const updateQuery = `UPDATE meal SET location = '${location}' WHERE id = ${mealId}`;
@@ -150,10 +160,11 @@ const updateQuery = `UPDATE meal SET location = '${location}' WHERE id = ${mealI
 
   // Retrieve the updated meal from the database
   const selectQuery = `SELECT * FROM meal WHERE id = ${mealId}`;
-  const updatedMeal = await knex.raw(selectQuery);
+  const [updatedMeal] = await knex.raw(selectQuery);
+  const [firstUpdatedMeal] = updatedMeal;
 
   // Send the updated meal as a response
-  res.json(updatedMeal[0]);
+  res.json(firstUpdatedMeal);
 });
 
 // 5. Route to delete a meal by ID
@@ -208,13 +219,16 @@ apiRouter.get("/reservations/:id", async (req, res) => {
     "SELECT * FROM reservation WHERE id = " + reservationId + ";";
 
   const reservation = await knex.raw(reservationQuery);
+    if (!reservation || reservation.length === 0) {
+    return res.status(404).json({ error: "No reservations found" });
+  }
   res.json(reservation[0]);
 });
 
 // 4. Route to update a reservation by ID
 apiRouter.put("/reservations/:id", async (req, res) => {
   const reservationId = req.params.id;
-  const email = req.body.bayram;
+  const email = req.body.email;
 
   // Construct the SQL query to update the meal
   const updateQuery = `UPDATE reservation SET contact_email = '${email}' WHERE id = ${reservationId}`;
@@ -299,7 +313,7 @@ apiRouter.delete("/reviews/:id", async (req, res) => {
 // GET ALL REVIEWS
 apiRouter.get("/reviews", async (req, res) => {
   const reviewQuery = `SELECT * FROM Review`;
-  const reviews = await knew.raw(reviewQuery);
+  const reviews = await knex.raw(reviewQuery);
   res.json(reviews[0]);
 });
 
@@ -308,7 +322,7 @@ apiRouter.get("/reviews/:id", async (req, res) => {
   const reviewId = req.params.id;
 
   const reviewQuery = `SELECT * FROM Review WHERE id = ${reviewId}`;
-  const review = await knew.raw(reviewQuery);
+  const review = await knex.raw(reviewQuery);
   res.json(review[0]);
 
 });
