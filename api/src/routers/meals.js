@@ -1,4 +1,5 @@
 import express from "express";
+import knex from "../database_client.js";
 
 const mealsRouter = express.Router();
 
@@ -73,7 +74,7 @@ mealsRouter.post("/", async (req, res) => {
   const { title } = req.body;
 
   // Insert the new meal into the database using a raw SQL query with direct string interpolation
-  const insertQuery = `INSERT INTO meal (title) VALUES ('${title}')`;
+  const insertQuery = `INSERT INTO meal (title, \`when\`) VALUES ('${title}', NOW())`;
   await knex.raw(insertQuery);
 
   // Retrieve the newly added meal from the database by its title
@@ -95,14 +96,14 @@ mealsRouter.get("/:id", async (req, res) => {
   const mealQuery2 = "SELECT * FROM meal WHERE id = " + mealId + ";";
 
   const [meals] = await knex.raw(mealQuery); //
-  const [firstMeal] = meals;
+  const [firstMealRetrieved] = meals;
   /*
  [ { } ] 
   */
-  if (!firstMeal) {
+  if (!firstMealRetrieved) {
     return res.status(404).json({ error: "No meals found" });
   }
-  res.json(firstMeal);
+  res.json(firstMealRetrieved);
 });
 
 // 4. Route to update a meal by ID
