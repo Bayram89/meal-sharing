@@ -1,16 +1,19 @@
 import express from "express";
+import knex from "../database_client.js";
 
 const reservationsRouter = express.Router();
 
 // 1. Route to get all reservations
 reservationsRouter.get("/", async (req, res) => {
   const reservationQuery = `SELECT * FROM reservation`;
-  const reservation = await knex.raw(reservationQuery);
-  res.json(reservation[0]);
+  const [reservations] = await knex.raw(reservationQuery);
+  if (!reservations || reservations.length === 0) {
+    return res.status(404).json({ error: "No reservations found" });
+  }
+  res.json(reservations);
 });
 
-
-// 2. Route to add a new reservation (POST) ?
+// 2. Route to add a new reservation (POST)
 reservationsRouter.post("/", async (req, res) => {
   // Extract the title from the request body
   const { meal_id } = req.body;
@@ -38,11 +41,11 @@ reservationsRouter.get("/:id", async (req, res) => {
   const reservationQuery2 =
     "SELECT * FROM reservation WHERE id = " + reservationId + ";";
 
-  const reservation = await knex.raw(reservationQuery);
-    if (!reservation || reservation.length === 0) {
+  const [reservation] = await knex.raw(reservationQuery);
+  if (!reservation || reservation.length === 0) {
     return res.status(404).json({ error: "No reservations found" });
   }
-  res.json(reservation[0]);
+  res.json(reservation);
 });
 
 // 4. Route to update a reservation by ID
@@ -58,10 +61,10 @@ reservationsRouter.put("/:id", async (req, res) => {
 
   // Retrieve the updated meal from the database
   const selectQuery = `SELECT * FROM reservation WHERE id = ${reservationId}`;
-  const updatedReservation = await knex.raw(selectQuery);
+  const [updatedReservation] = await knex.raw(selectQuery);
 
   // Send the updated meal as a response
-  res.json(updatedReservation[0]);
+  res.json(updatedReservation);
 });
 
 // 5. Route to delete a reservation by ID
@@ -77,6 +80,4 @@ reservationsRouter.delete("/:id", async (req, res) => {
   res.status(204).send(); // 204 No Content is a common response for successful DELETE requests
 });
 
-
 export default reservationsRouter;
-

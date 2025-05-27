@@ -23,14 +23,14 @@ mealsRouter.get("/past-meals", async (req, res) => {
   res.json(pastMeals[0]);
 });
 
-// 3. The route to get all meals sorted by ID
+// 3. The route to get all meals
 mealsRouter.get("/", async (req, res) => {
   const mealQuery = "SELECT * FROM meal";
-  const meal = await knex.raw(mealQuery);
-  if (!meal || meal.length === 0) {
+  const [meals] = await knex.raw(mealQuery);
+  if (!meals || meals.length === 0) {
     return res.status(404).json({ error: "No meals found" });
   }
-  res.json(meal[0]);
+  res.json(meals);
 });
 
 // 4. The route to get the FIRST meal
