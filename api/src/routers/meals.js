@@ -3,7 +3,91 @@ import knex from "../database_client.js";
 
 const mealsRouter = express.Router();
 
-// 1. The route to get all meals in the FUTURE
+//1. Our main route: a GET request to fetch all meals, and also with different filtering and sorting
+mealsRouter.get("/", async (req, res) => {
+  try {
+    // Here we get query parameters from the request
+    const {
+      maxPrice,
+      availableReservations,
+      title,
+      dateAfter,
+      dateBefore,
+      limit,
+      sortKey,
+      sortDir,
+    } = req.query;
+
+    // We set up a database query to fetch meals (for the meal table)
+    let query = knex("meal");
+
+    // There's a max price, so here shows meals equal to or cheaper than that
+    if (maxPrice) {
+      // Filter meals with a price less than maxPrice
+      query = query.where("price", "<=", Number(maxPrice));
+    }
+    // For speicif title we find those meals in their name
+    if (title) {
+      query = query.where("title", "like", `%${title}%`);
+    }
+     // If we want to see meals after a certain date
+    if (dateAfter) {
+      query = query.where("when", ">", dateAfter);
+    }
+     // And if we want meals before a certain date
+    if (dateBefore) {
+      query = query.where("when", "<", dateBefore);
+    }
+     // This is to see the meals that has spots still open
+    if (availableReservations === "true") {
+      query = query
+        .leftJoin("reservation", "meal.id", "=", "reservation.meal_id")
+        .groupBy("meal.id")
+        .havingRaw("meal.max_reservations > COALESCE(SUM(reservation.number_of_guests), 0)")
+        .select("meal.*");
+
+    // To see the meals that are all booked up
+    } else if (availableReservations === "false") {
+      // Filter meals with no available reservations
+      query = query
+        .leftJoin("reservation", "meal.id", "=", "reservation.meal_id")
+        .groupBy("meal.id")
+        .havingRaw("meal.max_reservations <= COALESCE(SUM(reservation.number_of_guests), 0)")
+        .select("meal.*");
+    }
+     // This is to sort meals
+    if (sortKey) {
+    
+      const allowedKeys = ["price", "when", "max_reservations"];
+      if (allowedKeys.includes(sortKey)) {
+        const direction = sortDir === "desc" ? "desc" : "asc";
+        query = query.orderBy(sortKey, direction);
+      }
+    }
+    // If we want only a number of meals
+    if (limit) {
+      query = query.limit(Number(limit));
+    }
+
+    // Here we run the query and get the meals
+    const meals = await query;
+
+    // If we didn't find any, return a 404 error
+    if (!meals.length) {
+      return res.status(404).json({ error: "No meals found" });
+    }
+
+    // Otherwise sending the meals that is found
+    res.json(meals);
+  } catch (error) {
+
+    // If anything is wrong then log the error 
+    console.error(error);
+    res.status(500).json({ error: "Something went wrong" });
+  }
+});
+
+// 2. The route to get all meals in the FUTURE
 mealsRouter.get("/future-meals", async (req, res) => {
   const futureMealsQuery = "SELECT * FROM meal WHERE `when` > NOW()";
   const futureMeals = await knex.raw(futureMealsQuery);
@@ -13,7 +97,7 @@ mealsRouter.get("/future-meals", async (req, res) => {
   res.json(futureMeals[0]);
 });
 
-// 2. The route to get all meals in the PAST
+// 3. The route to get all meals in the PAST
 mealsRouter.get("/past-meals", async (req, res) => {
   const pastMealsQuery = "SELECT * FROM meal WHERE `when` < NOW()";
   const pastMeals = await knex.raw(pastMealsQuery);
@@ -21,16 +105,6 @@ mealsRouter.get("/past-meals", async (req, res) => {
     return res.status(404).json({ error: "No past meal found" });
   }
   res.json(pastMeals[0]);
-});
-
-// 3. The route to get all meals
-mealsRouter.get("/", async (req, res) => {
-  const mealQuery = "SELECT * FROM meal";
-  const [meals] = await knex.raw(mealQuery);
-  if (!meals || meals.length === 0) {
-    return res.status(404).json({ error: "No meals found" });
-  }
-  res.json(meals);
 });
 
 // 4. The route to get the FIRST meal
@@ -53,7 +127,7 @@ mealsRouter.get("/last-meal", async (req, res) => {
   res.json(lastMeal[0]);
 });
 
-// Search - meals by name
+// 1. Search - meals by name
 // /meals?name=dessert
 // /meals?name=chicken
 // query params
@@ -136,7 +210,7 @@ mealsRouter.delete("/:id", async (req, res) => {
   // Execute the delete query
   await knex.raw(deleteQuery);
 
-  // Send a success response
+    // Send a success response
   res.status(204).send(); // 204 No Content is a common response for successful DELETE requests
 });
 
