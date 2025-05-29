@@ -30,34 +30,37 @@ mealsRouter.get("/", async (req, res) => {
     if (title) {
       query = query.where("title", "like", `%${title}%`);
     }
-     // If we want to see meals after a certain date
+    // If we want to see meals after a certain date
     if (dateAfter) {
       query = query.where("when", ">", dateAfter);
     }
-     // And if we want meals before a certain date
+    // And if we want meals before a certain date
     if (dateBefore) {
       query = query.where("when", "<", dateBefore);
     }
-     // This is to see the meals that has spots still open
+    // This is to see the meals that has spots still open
     if (availableReservations === "true") {
       query = query
         .leftJoin("reservation", "meal.id", "=", "reservation.meal_id")
         .groupBy("meal.id")
-        .havingRaw("meal.max_reservations > COALESCE(SUM(reservation.number_of_guests), 0)")
+        .havingRaw(
+          "meal.max_reservations > COALESCE(SUM(reservation.number_of_guests), 0)"
+        )
         .select("meal.*");
 
-    // To see the meals that are all booked up
+      // To see the meals that are all booked up
     } else if (availableReservations === "false") {
       // Filter meals with no available reservations
       query = query
         .leftJoin("reservation", "meal.id", "=", "reservation.meal_id")
         .groupBy("meal.id")
-        .havingRaw("meal.max_reservations <= COALESCE(SUM(reservation.number_of_guests), 0)")
+        .havingRaw(
+          "meal.max_reservations <= COALESCE(SUM(reservation.number_of_guests), 0)"
+        )
         .select("meal.*");
     }
-     // This is to sort meals
+    // This is to sort meals
     if (sortKey) {
-    
       const allowedKeys = ["price", "when", "max_reservations"];
       if (allowedKeys.includes(sortKey)) {
         const direction = sortDir === "desc" ? "desc" : "asc";
@@ -80,8 +83,7 @@ mealsRouter.get("/", async (req, res) => {
     // Otherwise sending the meals that is found
     res.json(meals);
   } catch (error) {
-
-    // If anything is wrong then log the error 
+    // If anything is wrong then log the error
     console.error(error);
     res.status(500).json({ error: "Something went wrong" });
   }
@@ -210,7 +212,7 @@ mealsRouter.delete("/:id", async (req, res) => {
   // Execute the delete query
   await knex.raw(deleteQuery);
 
-    // Send a success response
+  // Send a success response
   res.status(204).send(); // 204 No Content is a common response for successful DELETE requests
 });
 
