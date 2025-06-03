@@ -54,8 +54,8 @@ reviewsRouter.delete("/:id", async (req, res) => {
 // GET ALL REVIEWS
 reviewsRouter.get("/", async (req, res) => {
   const reviewQuery = `SELECT * FROM Review`;
-  const reviews = await knex.raw(reviewQuery);
-  res.json(reviews[0]);
+  const [reviews] = await knex.raw(reviewQuery);
+  res.json(reviews);
 });
 
 // GET A REVIEW BY ID
@@ -63,8 +63,23 @@ reviewsRouter.get("/:id", async (req, res) => {
   const reviewId = req.params.id;
 
   const reviewQuery = `SELECT * FROM Review WHERE id = ${reviewId}`;
-  const review = await knex.raw(reviewQuery);
-  res.json(review[0]);
+  const [review] = await knex.raw(reviewQuery);
+  if (!review || review.length === 0) {
+    return res.status(404).json({ error: "Review not found" });
+  }
+  res.json(review);
+});
+
+reviewsRouter.get("/meals/:meal_id", async (req, res) => {
+  const mealId = req.params.meal_id;
+
+  const reviewsQuery = `SELECT * FROM Review WHERE meal_id = ${mealId}`;
+  const [reviews] = await knex.raw(reviewsQuery);
+  if (!reviews || reviews.length === 0) {
+    return res.status(404).json({ error: "No reviews found for this meal" });
+  }
+
+  res.json(reviews);
 });
 
 export default reviewsRouter;
