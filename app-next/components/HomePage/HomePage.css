@@ -1,9 +1,30 @@
-.link {
-  display: flex;
-  margin: 5vh 0;
+body {
+  background-color: #f3f0eb; /* Soft, warm beige background for the whole page */
+  margin: 0;
 }
 
-.logo,
-.message {
-  margin: auto;
+.homepage {
+  padding: 40px 20px;
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #2c2c2c;
+}
+
+.homepage h1 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  color: #1a1a1a;
+}
+
+.intro {
+  background-color: #fff3e6; /* Warm light-orange box */
+  border-left: 6px solid #e59e4d;
+  padding: 25px;
+  margin-bottom: 50px;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  line-height: 1.8;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
 }
