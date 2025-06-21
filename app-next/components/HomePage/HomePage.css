@@ -1,5 +1,5 @@
 body {
-  background-color: #f3f0eb; /* Soft, warm beige background for the whole page */
+  background-color: #f3f0eb;
   margin: 0;
 }
 
@@ -8,7 +8,7 @@ body {
   max-width: 900px;
   margin: 0 auto;
   text-align: center;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   color: #2c2c2c;
 }
 
@@ -19,7 +19,7 @@ body {
 }
 
 .intro {
-  background-color: #fff3e6; /* Warm light-orange box */
+  background-color: #fff3e6;
   border-left: 6px solid #e59e4d;
   padding: 25px;
   margin-bottom: 50px;
