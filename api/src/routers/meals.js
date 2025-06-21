@@ -172,7 +172,6 @@ mealsRouter.post("/", async (req, res) => {
 mealsRouter.get("/:id", async (req, res) => {
   const mealId = req.params.id;
   const mealQuery = `SELECT * FROM meal WHERE id = ${mealId}`;
-  const mealQuery2 = "SELECT * FROM meal WHERE id = " + mealId + ";";
 
   const [meals] = await knex.raw(mealQuery); 
   const [firstMealRetrieved] = meals;
