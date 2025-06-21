@@ -16,22 +16,27 @@ useEffect(() => {
       });
   }, []);
 
+ if (meals.length === 0) return <p>Loading meals...</p>;
+
   return (
- <div>
-      <h2>Meals List</h2>
-      {meals.length === 0 ? (
-        <p>Loading meals...</p>
-      ) : (
-        meals.map((meal) => (
-          <div key={meal.id}>
-            <p><strong>Title:</strong> {meal.title}</p>
-            <p><strong>Description:</strong> {meal.description}</p>
-            <p><strong>Price:</strong> ${meal.price}</p>
-            <hr />
-          </div>
-        ))
-      )}
-    </div>
+    <table className="meals-table">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Description</th>
+          <th>Price</th>
+        </tr>
+      </thead>
+      <tbody>
+        {meals.map(({ id, title, description, price }) => (
+          <tr key={id}>
+            <td>{title}</td>
+            <td>{description}</td>
+            <td>${price}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 }
 
