@@ -1,18 +1,22 @@
-import HYFLogo from "@/assets/hyf.svg";
-import Image from "next/image";
 import "./HomePage.css";
+import MealsList from "@/components/MealsList/MealsList";
+import "@/components/MealsList/MealsList.css";
 
-// Feel free to replace the content of this component with your own
 function HomePage() {
   return (
-    <>
-      <a href="https://www.hackyourfuture.dk/" target="_blank" className="link">
-        <Image src={HYFLogo.src} width={HYFLogo.width} height={HYFLogo.height} className="logo" />
-      </a>
-      <a href="/nested" className="link">
-        <span className="message">Go to the nested page</span>
-      </a>
-    </>
+    <div className="homepage">
+      <h1>Welcome to our Meal Sharing page</h1>
+      <p className="intro">
+        We’re glad you stopped by! 👋  
+        Just like in a Danish kitchen, we believe food tastes better when it's shared.  
+        Below you’ll find some of our favorite meals — made with love and care.  
+        Choose something that makes you happy, and enjoy every bite.  
+        <br /><br />
+        Velbekomme! 🍽️
+      </p>
+
+      <MealsList />
+    </div>
   );
 }
 
