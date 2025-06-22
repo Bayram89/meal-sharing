@@ -19,21 +19,17 @@ function MealsList() {
 
   if (meals.length === 0) return <p>Loading meals...</p>;
 
-  return (
-    <table className="meals-table">
-      <thead>
-        <tr>
-          <th>Title</th>
-          <th>Description</th>
-          <th>Price</th>
-        </tr>
-      </thead>
-      <tbody>
-        {meals.map(({ id, title, description, price }) => (
-          <MealCard key={id} title={title} description={description} price={price} />
-        ))}
-      </tbody>
-    </table>
+   return (
+    <div className="meals-list">
+      <div className="meals-header">
+        <span className="header-title">Title</span>
+        <span className="header-description">Description</span>
+        <span className="header-price">Price</span>
+      </div>
+      {meals.map(({ id, title, description, price }) => (
+        <MealCard key={id} title={title} description={description} price={price} />
+      ))}
+    </div>
   );
 }
 
