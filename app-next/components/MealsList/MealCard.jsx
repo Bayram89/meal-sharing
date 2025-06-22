@@ -4,10 +4,10 @@ import React from "react";
 
 export default function MealCard({ title, description, price }) {
   return (
-    <tr>
-      <td>{title} </td>
-      <td>{description}</td>
-      <td>${price}</td>
-    </tr>
+    <div className="meal-card">
+      <div className="meal-title">{title}</div>
+      <div className="meal-description">{description}</div>
+      <div className="meal-price">${price}</div>
+    </div>
   );
 }
