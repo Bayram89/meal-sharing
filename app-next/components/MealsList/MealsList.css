@@ -1,31 +1,36 @@
-.meals-table {
+.meals-list {
   width: 90%;
   max-width: 800px;
   margin: 30px auto;
-  border-collapse: collapse;
-  background-color: #ffffff;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  border: 1px solid #ddd;
+  background-color: #fff;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
   border-radius: 8px;
   overflow: hidden;
 }
 
-.meals-table th,
-.meals-table td {
+.meals-header,
+.meal-card {
+  display: grid;
+  grid-template-columns: 2fr 4fr 1fr;
   padding: 16px;
-  text-align: left;
   border-bottom: 1px solid #eee;
-  font-size: 1.1rem;
+  align-items: center;
 }
 
-.meals-table th {
+.meals-header {
   background-color: #f5f5f5;
   font-weight: bold;
   color: #333;
 }
 
-.meals-table tr:hover {
+.meal-card:hover {
   background-color: #f1faff;
   transition: background-color 0.3s;
+}
+
+.meal-title,
+.meal-description,
+.meal-price {
+  font-size: 1.1rem;
 }
