@@ -1,13 +1,14 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import MealCard from "./MealCard";
 
 function MealsList() {
   const [meals, setMeals] = useState([]);
 
-useEffect(() => {
+  useEffect(() => {
     fetch("http://localhost:3001/api/meals")
-    .then((res) => res.json())
+      .then((res) => res.json())
       .then((data) => {
         setMeals(data);
       })
@@ -16,7 +17,7 @@ useEffect(() => {
       });
   }, []);
 
- if (meals.length === 0) return <p>Loading meals...</p>;
+  if (meals.length === 0) return <p>Loading meals...</p>;
 
   return (
     <table className="meals-table">
@@ -29,11 +30,7 @@ useEffect(() => {
       </thead>
       <tbody>
         {meals.map(({ id, title, description, price }) => (
-          <tr key={id}>
-            <td>{title}</td>
-            <td>{description}</td>
-            <td>${price}</td>
-          </tr>
+          <MealCard key={id} title={title} description={description} price={price} />
         ))}
       </tbody>
     </table>
