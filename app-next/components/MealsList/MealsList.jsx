@@ -19,7 +19,7 @@ function MealsList() {
 
   if (meals.length === 0) return <p>Loading meals...</p>;
 
-   return (
+  return (
     <div className="meals-list">
       <div className="meals-header">
         <span className="header-title">Title</span>
@@ -27,7 +27,12 @@ function MealsList() {
         <span className="header-price">Price</span>
       </div>
       {meals.map(({ id, title, description, price }) => (
-        <MealCard key={id} title={title} description={description} price={price} />
+        <MealCard
+          key={id}
+          title={title}
+          description={description}
+          price={price}
+        />
       ))}
     </div>
   );
