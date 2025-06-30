@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Link from "next/link";
 import {
     Card,
@@ -7,30 +7,13 @@ import {
     Typography,
     Grid,
     CardActionArea,
-    CircularProgress,
     Box,
 } from "@mui/material";
 
-export default function MealsPage() {
-    const [meals, setMeals] = useState([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        fetch("http://localhost:3001/api/meals")
-            .then((res) => res.json())
-            .then((data) => {
-                setMeals(data);
-                setLoading(false);
-            });
-    }, []);
-
-    if (loading) {
-        return (
-            <Box display="flex" justifyContent="center" mt={4}>
-                <CircularProgress />
-            </Box>
-        );
-    }
+// Mark as server component by removing useEffect/useState and using async fetch
+export default async function MealsPage() {
+    const res = await fetch("http://localhost:3001/api/meals", { cache: "no-store" });
+    const meals = await res.json();
 
     return (
         <Box p={3}>
