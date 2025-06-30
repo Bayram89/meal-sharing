@@ -7,7 +7,7 @@ function MealsList() {
   const [meals, setMeals] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:3001/api/meals")
+    fetch("http://localhost:3001/api/meals?limit=10")
       .then((res) => res.json())
       .then((data) => {
         setMeals(data);
