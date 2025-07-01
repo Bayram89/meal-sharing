@@ -1,0 +1,76 @@
+.container {
+    max-width: 400px;
+    margin: 40px auto;
+    padding: 32px;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+    background: #fff;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.title {
+    margin-bottom: 8px;
+    font-size: 28px;
+    font-weight: 700;
+    color: #222;
+}
+
+.description {
+    margin-bottom: 24px;
+    color: #555;
+    font-size: 16px;
+}
+
+.formGroup {
+    margin-bottom: 18px;
+}
+
+.label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 500;
+    color: #333;
+}
+
+.input {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+    outline: none;
+    transition: border 0.2s;
+}
+
+.input:focus {
+    border: 1.5px solid #0070f3;
+}
+
+.button {
+    width: 100%;
+    padding: 12px 0;
+    border-radius: 8px;
+    border: none;
+    background: #0070f3;
+    color: #fff;
+    font-weight: 600;
+    font-size: 17px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,112,243,0.08);
+    transition: background 0.2s;
+}
+
+.button:disabled {
+    background: #bdbdbd;
+    cursor: not-allowed;
+}
+
+.noReservations {
+    margin-top: 24px;
+    color: #e53935;
+    background: #fff3f3;
+    padding: 16px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 500;
+}
