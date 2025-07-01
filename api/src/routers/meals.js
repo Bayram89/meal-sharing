@@ -171,14 +171,23 @@ mealsRouter.post("/", async (req, res) => {
 
 mealsRouter.get("/:id", async (req, res) => {
   const mealId = req.params.id;
+  // Fetch the meal by id
   const mealQuery = `SELECT * FROM meal WHERE id = ${mealId}`;
-
-  const [meals] = await knex.raw(mealQuery); 
+  const [meals] = await knex.raw(mealQuery);
   const [firstMealRetrieved] = meals;
 
   if (!firstMealRetrieved) {
     return res.status(404).json({ error: "No meals found" });
   }
+
+  // Fetch reservation count for the meal
+  const reservationsCountQuery = `SELECT COUNT(*) AS reservationCount FROM reservation WHERE meal_id = ${mealId}`;
+  const [countResult] = await knex.raw(reservationsCountQuery);
+  const reservationCount = countResult[0]?.reservationCount || 0;
+
+  // Attach reservation count to the meal object
+  firstMealRetrieved.reservationCount = reservationCount;
+
   res.json(firstMealRetrieved);
 });
 
