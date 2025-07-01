@@ -20,15 +20,21 @@ reservationsRouter.post("/", async (req, res) => {
   // Insert the new reservation into the database using parameterized query to prevent SQL injection
   const insertQuery = `
     INSERT INTO reservation (meal_id, contact_phonenumber, contact_name, contact_email)
-    VALUES (?, ?, ?, ?)
-    RETURNING *;
+    VALUES (?, ?, ?, ?);
   `;
-  const [newReservation] = await knex.raw(insertQuery, [
+  const [insertResult] = await knex.raw(insertQuery, [
     meal_id,
     contact_phonenumber,
     contact_name,
     contact_email,
   ]);
+
+  // Get the inserted reservation by last insert id
+  const insertedId = insertResult.insertId;
+  const [newReservation] = await knex.raw(
+    "SELECT * FROM reservation WHERE id = ?",
+    [insertedId]
+  );
 
   res.status(201).json(newReservation[0]);
 });
