@@ -1,9 +1,10 @@
 import React from "react";
 import Link from "next/link";
 import styles from "./page.module.css";
+import api from "@/utils/api";
 
 export default async function MealsPage() {
-    const res = await fetch("http://localhost:3001/api/meals", { cache: "no-store" });
+    const res = await fetch(api("meals"), { cache: "no-store" });
     const meals = await res.json();
 
     return (

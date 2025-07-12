@@ -1,7 +1,8 @@
 import SelectedMeal from "@/components/MealID/SelectedMeal";
+import api from "@/utils/api";
 
 async function fetchMeal(id) {
-  const res = await fetch(`http://localhost:3001/api/meals/${id}`, {
+  const res = await fetch(api(`meals/${id}`), {
     cache: "no-store",
   });
   if (!res.ok) throw new Error("Failed to fetch meal");

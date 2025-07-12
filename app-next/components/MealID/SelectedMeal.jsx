@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import styles from "./SelectedMeal.module.css";
+import api from "@/utils/api";
 
 const SelectedMeal = ({ meal }) => {
   const [form, setForm] = useState({
@@ -24,7 +25,7 @@ const SelectedMeal = ({ meal }) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:3001/api/reservations", {
+      const res = await fetch(api("reservations"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
