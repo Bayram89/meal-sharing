@@ -2,12 +2,16 @@
 
 import React, { useEffect, useState } from "react";
 import MealCard from "./MealCard";
+import Button from "@mui/material/Button";
+import { useRouter } from "next/navigation";
+import api from "@/utils/api";
 
 function MealsList() {
   const [meals, setMeals] = useState([]);
+  const router = useRouter();
 
   useEffect(() => {
-    fetch("http://localhost:3001/api/meals")
+    fetch(api("meals?limit=10"))
       .then((res) => res.json())
       .then((data) => {
         setMeals(data);
@@ -34,6 +38,15 @@ function MealsList() {
           price={price}
         />
       ))}
+
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => router.push("/meals")}
+        style={{ marginTop: "1rem" }}
+      >
+        See all
+      </Button>
     </div>
   );
 }

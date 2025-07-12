@@ -15,18 +15,28 @@ reservationsRouter.get("/", async (req, res) => {
 
 // 2. Route to add a new reservation (POST)
 reservationsRouter.post("/", async (req, res) => {
-  // Extract the title from the request body
-  const { meal_id } = req.body;
+  const { meal_id, contact_phonenumber, contact_name, contact_email } =
+    req.body;
 
-  // Insert the new reservation into the database using a raw SQL query with direct string interpolation
-  const insertQuery = `INSERT INTO reservation (meal_id) VALUES (${meal_id})`;
-  await knex.raw(insertQuery);
+  // Insert the new reservation into the database using parameterized query to prevent SQL injection
+  const insertQuery = `
+    INSERT INTO reservation (meal_id, contact_phonenumber, contact_name, contact_email)
+    VALUES (?, ?, ?, ?);
+  `;
+  const [insertResult] = await knex.raw(insertQuery, [
+    meal_id,
+    contact_phonenumber,
+    contact_name,
+    contact_email,
+  ]);
 
-  // Retrieve the newly added reservation from the database by its ID
-  const selectQuery = `SELECT * FROM reservation WHERE meal_id = ${meal_id}`;
-  const newReservation = await knex.raw(selectQuery);
+  // Get the inserted reservation by last insert id
+  const insertedId = insertResult.insertId;
+  const [newReservation] = await knex.raw(
+    "SELECT * FROM reservation WHERE id = ?",
+    [insertedId]
+  );
 
-  // Send the newly added reservation as a response
   res.status(201).json(newReservation[0]);
 });
 
