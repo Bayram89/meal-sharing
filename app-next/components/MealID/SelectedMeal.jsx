@@ -14,8 +14,8 @@ const SelectedMeal = ({ meal }) => {
 
   if (!meal) return <div>No meal selected.</div>;
 
-  const hasAvailableReservations =
-    meal.max_reservations > meal.reservationCount;
+  const availableReservations = meal.max_reservations - meal.reservationCount;
+  const hasAvailableReservations = availableReservations > 0;
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -49,6 +49,14 @@ const SelectedMeal = ({ meal }) => {
       setLoading(false);
     }
   };
+
+  const infoBox = (
+    <div className={styles.infoBox}>
+      {hasAvailableReservations
+        ? `${availableReservations} reservation${availableReservations > 1 ? "s" : ""} available`
+        : "No reservations available"}
+    </div>
+  );
 
   const content = hasAvailableReservations ? (
     <form onSubmit={handleSubmit}>
@@ -99,6 +107,7 @@ const SelectedMeal = ({ meal }) => {
     <div className={styles.container}>
       <h2 className={styles.title}>{meal.name}</h2>
       <p className={styles.description}>{meal.description}</p>
+      {infoBox}
       {content}
     </div>
   );
