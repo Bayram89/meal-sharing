@@ -15,7 +15,8 @@ reservationsRouter.get("/", async (req, res) => {
 
 // 2. Route to add a new reservation (POST)
 reservationsRouter.post("/", async (req, res) => {
-  const { meal_id, contact_phonenumber, contact_name, contact_email } = req.body;
+  const { meal_id, contact_phonenumber, contact_name, contact_email } =
+    req.body;
 
   // Insert the new reservation into the database using parameterized query to prevent SQL injection
   const insertQuery = `

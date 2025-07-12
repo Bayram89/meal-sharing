@@ -1,49 +1,36 @@
 import React from "react";
 import Link from "next/link";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Paper,
-    Typography,
-    Box,
-    Avatar,
-} from "@mui/material";
+import styles from "./page.module.css";
 
 export default async function MealsPage() {
     const res = await fetch("http://localhost:3001/api/meals", { cache: "no-store" });
     const meals = await res.json();
 
     return (
-        <Box p={3}>
-            <Typography variant="h4" gutterBottom>
-                All Meals
-            </Typography>
-            <TableContainer component={Paper}>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Title</TableCell>
-                            <TableCell>Description</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
+        <div className={styles.container}>
+            <h2 className={styles.heading}>All Meals</h2>
+            <div className={styles.tableWrapper}>
+                <table className={styles.table}>
+                    <thead>
+                        <tr className={styles.tableHeaderRow}>
+                            <th className={styles.tableHeaderCell}>Title</th>
+                            <th className={styles.tableHeaderCell}>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
                         {meals.map((meal) => (
-                            <TableRow key={meal.id} hover>
-                                <TableCell>
-                                    <Link href={`/meals/${meal.id}`} style={{ textDecoration: "none", color: "inherit" }}>
+                            <tr key={meal.id} className={styles.tableRow}>
+                                <td className={styles.tableCell}>
+                                    <Link href={`/meals/${meal.id}`} className={styles.mealLink}>
                                         {meal.title}
                                     </Link>
-                                </TableCell>
-                                <TableCell>{meal.description}</TableCell>
-                            </TableRow>
+                                </td>
+                                <td className={styles.tableCell}>{meal.description}</td>
+                            </tr>
                         ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-        </Box>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     );
 }

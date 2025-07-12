@@ -1,0 +1,52 @@
+.container {
+    padding: 24px;
+}
+
+.heading {
+    margin-bottom: 24px;
+}
+
+.tableWrapper {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tableHeaderRow {
+    background: #f5f5f5;
+}
+
+.tableHeaderCell {
+    text-align: left;
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+}
+
+.tableRow {
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.tableRow:hover {
+    background: #f0f7ff;
+}
+
+.tableCell {
+    padding: 12px;
+}
+
+.mealLink {
+    text-decoration: none;
+    color: #1976d2;
+}
+
+.mealLink:hover {
+    text-decoration: underline;
+}
