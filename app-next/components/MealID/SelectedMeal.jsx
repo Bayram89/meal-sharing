@@ -50,54 +50,56 @@ const SelectedMeal = ({ meal }) => {
     }
   };
 
+  const content = hasAvailableReservations ? (
+    <form onSubmit={handleSubmit}>
+      <div className={styles.formGroup}>
+        <label className={styles.label}>Name</label>
+        <input
+          type="text"
+          name="contact_name"
+          value={form.contact_name}
+          onChange={handleChange}
+          required
+          className={styles.input}
+        />
+      </div>
+      <div className={styles.formGroup}>
+        <label className={styles.label}>Email</label>
+        <input
+          type="email"
+          name="contact_email"
+          value={form.contact_email}
+          onChange={handleChange}
+          required
+          className={styles.input}
+        />
+      </div>
+      <div className={styles.formGroup}>
+        <label className={styles.label}>Phone Number</label>
+        <input
+          type="tel"
+          name="contact_phonenumber"
+          value={form.contact_phonenumber}
+          onChange={handleChange}
+          required
+          className={styles.input}
+        />
+      </div>
+      <button type="submit" disabled={loading} className={styles.button}>
+        {loading ? "Booking..." : "Book seat"}
+      </button>
+    </form>
+  ) : (
+    <div className={styles.noReservations}>
+      No available reservations for this meal.
+    </div>
+  );
+
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>{meal.name}</h2>
       <p className={styles.description}>{meal.description}</p>
-      {hasAvailableReservations ? (
-        <form onSubmit={handleSubmit}>
-          <div className={styles.formGroup}>
-            <label className={styles.label}>Name</label>
-            <input
-              type="text"
-              name="contact_name"
-              value={form.contact_name}
-              onChange={handleChange}
-              required
-              className={styles.input}
-            />
-          </div>
-          <div className={styles.formGroup}>
-            <label className={styles.label}>Email</label>
-            <input
-              type="email"
-              name="contact_email"
-              value={form.contact_email}
-              onChange={handleChange}
-              required
-              className={styles.input}
-            />
-          </div>
-          <div className={styles.formGroup}>
-            <label className={styles.label}>Phone Number</label>
-            <input
-              type="tel"
-              name="contact_phonenumber"
-              value={form.contact_phonenumber}
-              onChange={handleChange}
-              required
-              className={styles.input}
-            />
-          </div>
-          <button type="submit" disabled={loading} className={styles.button}>
-            {loading ? "Booking..." : "Book seat"}
-          </button>
-        </form>
-      ) : (
-        <div className={styles.noReservations}>
-          No available reservations for this meal.
-        </div>
-      )}
+      {content}
     </div>
   );
 };
