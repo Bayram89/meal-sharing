@@ -10,10 +10,9 @@ function HomePage() {
       <p className="intro">
         We’re glad you stopped by! 👋  
         Just like in a Danish kitchen, we believe food tastes better when it's shared.  
-        Below you’ll find some of our favorite meals — made with love and care.  
-        Choose something that makes you happy, and enjoy every bite.  
+        Everything you see below was made with heart. Pick something that looks good, and enjoy it like you're at a friend’s table. 
         <br /><br />
-        Velbekomme! 🍽️
+        Bon appétit! 🍽️
       </p>
 
       <MealsList />
