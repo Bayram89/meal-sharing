@@ -80,6 +80,8 @@ mealsRouter.get("/", async (req, res) => {
       return res.status(404).json({ error: "No meals found" });
     }
 
+    console.log(meals);
+
     // Otherwise sending the meals that is found
     res.json(meals);
   } catch (error) {
