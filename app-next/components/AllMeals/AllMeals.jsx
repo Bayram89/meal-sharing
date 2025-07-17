@@ -6,24 +6,15 @@ import styles from "./AllMeals.module.css";
 import api from "@/utils/api";
 import { Search, Clock, Users, ChefHat, ArrowLeft, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-const SORT_FIELDS = [
-    { value: "price", label: "Price" },
-    { value: "when", label: "When" },
-    { value: "max_reservations", label: "Max Reservations" },
-];
-
-const SORT_DIRECTIONS = [
-    { value: "asc", label: "Ascending" },
-    { value: "desc", label: "Descending" },
-];
 
 export default function AllMeals({ meals }) {
     const [search, setSearch] = useState("");
     const [sortKey, setSortKey] = useState("title");
     const [sortDir, setSortDir] = useState("asc");
     const [filteredMeals, setFilteredMeals] = useState(Array.isArray(meals) ? meals : []);
-
+    const router = useRouter();
 
   useEffect(() => {
     let filtered = meals.filter(meal => {
@@ -107,6 +98,10 @@ export default function AllMeals({ meals }) {
       hour: '2-digit',
       minute: '2-digit'
     });
+  };
+  
+    const handleMealClick = (mealId) => {
+    router.push(`/meals/${mealId}`);
   };
   
     const fetchMeals = async (searchValue, key, dir) => {
@@ -222,7 +217,7 @@ export default function AllMeals({ meals }) {
 
         <div className={styles.mealsGrid}>
           {filteredMeals.map((meal) => (
-            <div key={meal.id} className={styles.mealCard}>
+            <div key={meal.id} className={styles.mealCard} onClick={() => handleMealClick(meal.id)}>
               <div className={styles.imageContainer}>
                 <img
                   src={meal.image}
