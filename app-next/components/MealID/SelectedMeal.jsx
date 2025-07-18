@@ -12,7 +12,13 @@ export default function SelectedMeal({ meal }) {
     contact_name: "",
     contact_email: "",
   });
+  const [reviewForm, setReviewForm] = useState({
+    title: "",
+    description: "",
+    stars: 5,
+  });
   const [loading, setLoading] = useState(false);
+  const [reviewLoading, setReviewLoading] = useState(false);
 
   if (!meal) return <div>No meal selected.</div>;
 
@@ -49,6 +55,43 @@ export default function SelectedMeal({ meal }) {
       alert("An error occurred. Please try again.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleReviewChange = (e) => {
+    const { name, value } = e.target;
+    setReviewForm({ 
+      ...reviewForm, 
+      [name]: name === 'stars' ? parseInt(value) : value 
+    });
+  };
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+    setReviewLoading(true);
+    try {
+      const res = await fetch(api("reviews"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          meal_id: meal.id,
+          ...reviewForm,
+        }),
+      });
+      if (res.ok) {
+        alert("Review submitted successfully!");
+        setReviewForm({
+          title: "",
+          description: "",
+          stars: 5,
+        });
+      } else {
+        alert("Review submission failed. Please try again.");
+      }
+    } catch (err) {
+      alert("An error occurred. Please try again.");
+    } finally {
+      setReviewLoading(false);
     }
   };
 
@@ -197,9 +240,6 @@ export default function SelectedMeal({ meal }) {
                   >
                     {loading ? 'Processing...' : 'Reserve Your Spot'}
                   </button>
-                  <button type="button" className={styles.shareButton}>
-                    Share Event
-                  </button>
                 </div>
               </form>
             ) : (
@@ -208,11 +248,75 @@ export default function SelectedMeal({ meal }) {
                 <p className={styles.soldOutText}>
                   Unfortunately, this event is fully booked. Check back later for availability.
                 </p>
-                <button className={styles.shareButton}>
-                  Share Event
-                </button>
               </div>
             )}
+
+            {/* Submit Review Section */}
+            <div className={styles.reviewSection}>
+              <form onSubmit={handleReviewSubmit} className={styles.reviewForm}>
+                <h3 className={styles.reviewTitle}>Submit a Review</h3>
+                
+                <div className={styles.formGroup}>
+                  <label htmlFor="review_title" className={styles.formLabel}>
+                    Review Title
+                  </label>
+                  <input
+                    type="text"
+                    id="review_title"
+                    name="title"
+                    value={reviewForm.title}
+                    onChange={handleReviewChange}
+                    required
+                    className={styles.formInput}
+                    placeholder="Give your review a title"
+                  />
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label htmlFor="review_description" className={styles.formLabel}>
+                    Review Description
+                  </label>
+                  <textarea
+                    id="review_description"
+                    name="description"
+                    value={reviewForm.description}
+                    onChange={handleReviewChange}
+                    required
+                    rows={4}
+                    className={styles.formTextarea}
+                    placeholder="Share your experience with this meal..."
+                  />
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label htmlFor="review_stars" className={styles.formLabel}>
+                    Rating (1-5 stars)
+                  </label>
+                  <select
+                    id="review_stars"
+                    name="stars"
+                    value={reviewForm.stars}
+                    onChange={handleReviewChange}
+                    required
+                    className={styles.formSelect}
+                  >
+                    <option value={1}>1 Star - Poor</option>
+                    <option value={2}>2 Stars - Fair</option>
+                    <option value={3}>3 Stars - Good</option>
+                    <option value={4}>4 Stars - Very Good</option>
+                    <option value={5}>5 Stars - Excellent</option>
+                  </select>
+                </div>
+
+                <button 
+                  type="submit" 
+                  disabled={reviewLoading}
+                  className={styles.reviewSubmitButton}
+                >
+                  {reviewLoading ? 'Submitting...' : 'Submit Review'}
+                </button>
+              </form>
+            </div>
           </div>
         </div>
       </main>
