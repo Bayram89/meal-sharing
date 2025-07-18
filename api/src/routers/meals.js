@@ -175,8 +175,9 @@ mealsRouter.get("/:id", async (req, res) => {
   try {
     const mealId = req.params.id;
     const mealQuery = `SELECT * FROM meal WHERE id = ${mealId}`;
-    const [meals] = await knex.raw(mealQuery);
-    const [firstMealRetrieved] = meals;
+    const mealResult = await knex.raw(mealQuery);
+    const meals = mealResult[0] || mealResult.rows || mealResult; 
+    const firstMealRetrieved = Array.isArray(meals) ? meals[0] : undefined;
 
     if (!firstMealRetrieved) {
       return res.status(404).json({ error: "No meals found" });
@@ -187,7 +188,7 @@ mealsRouter.get("/:id", async (req, res) => {
     const reservationCount = countResult[0]?.reservationCount || 0;
 
     firstMealRetrieved.reservationCount = reservationCount;
-    
+
 console.log(firstMealRetrieved);
 
 
