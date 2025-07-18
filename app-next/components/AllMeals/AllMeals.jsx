@@ -217,8 +217,7 @@ export default function AllMeals({ meals }) {
 
         <div className={styles.mealsGrid}>
           {filteredMeals.map((meal) => (
-            <div key={meal.id} className={styles.mealCard} onClick={() => handleMealClick(meal.id)}>
-              <div className={styles.imageContainer}>
+<Link key={meal.id} href={`/meals/${meal.id}`} className={styles.mealCard}>              <div className={styles.imageContainer}>
                 <img
                   src={meal.image}
                   alt={meal.title}
@@ -258,7 +257,7 @@ export default function AllMeals({ meals }) {
                   </div>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
         
