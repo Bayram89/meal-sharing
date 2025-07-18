@@ -1,76 +1,435 @@
 .container {
-    max-width: 400px;
-    margin: 40px auto;
-    padding: 32px;
-    border-radius: 16px;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.10);
-    background: #fff;
-    font-family: 'Segoe UI', Arial, sans-serif;
+  min-height: 100vh;
+  background-color: #f9fafb;
 }
 
-.title {
-    margin-bottom: 8px;
-    font-size: 28px;
-    font-weight: 700;
-    color: #222;
+.header {
+  background-color: white;
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
 }
 
-.description {
-    margin-bottom: 24px;
-    color: #555;
-    font-size: 16px;
+.headerContent {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+
+.backButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #6b7280;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  width: fit-content;
+}
+
+.backButton:hover {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+.backIcon {
+  height: 16px;
+  width: 16px;
+}
+
+.main {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 32px 16px;
+}
+
+.mealContainer {
+  background-color: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.imageSection {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .imageSection {
+    aspect-ratio: 21 / 9;
+  }
+}
+
+.mealImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.priceBadge {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  color: #111827;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.priceIcon {
+  height: 18px;
+  width: 18px;
+}
+
+.contentSection {
+  padding: 32px;
+}
+
+@media (min-width: 768px) {
+  .contentSection {
+    padding: 48px;
+  }
+}
+
+.mealHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+@media (min-width: 768px) {
+  .mealHeader {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+}
+
+.mealTitle {
+  font-size: 32px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+  line-height: 1.2;
+}
+
+@media (min-width: 768px) {
+  .mealTitle {
+    font-size: 40px;
+  }
+}
+
+.spotsBadge {
+  background-color: #f3f4f6;
+  color: #374151;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  border: 1px solid #e5e7eb;
+  width: fit-content;
+}
+
+.mealDescription {
+  font-size: 18px;
+  line-height: 1.6;
+  color: #6b7280;
+  margin: 0 0 32px 0;
+}
+
+.detailsGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+@media (min-width: 768px) {
+  .detailsGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px;
+  }
+}
+
+.detailItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 20px;
+  background-color: #f9fafb;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+.detailIcon {
+  height: 24px;
+  width: 24px;
+  color: #ea580c;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.detailContent {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detailLabel {
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.detailValue {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.actionSection {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+@media (min-width: 768px) {
+  .actionSection {
+    flex-direction: row;
+    gap: 24px;
+  }
+}
+
+.reserveButton {
+  flex: 1;
+  background-color: #ea580c;
+  color: white;
+  padding: 16px 32px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.reserveButton:hover {
+  background-color: #dc2626;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.3);
+}
+
+.shareButton {
+  flex: 1;
+  background-color: white;
+  color: #374151;
+  padding: 16px 32px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.shareButton:hover {
+  background-color: #f3f4f6;
+  border-color: #9ca3af;
+  transform: translateY(-1px);
+}
+
+.reviewSection {
+  margin-top: 40px;
+  padding-top: 40px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.reviewForm {
+  background-color: #f9fafb;
+  padding: 32px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+.reviewTitle {
+  font-size: 24px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 24px 0;
+}
+
+.formTextarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 16px;
+  background-color: white;
+  transition: border-color 0.2s ease;
+  resize: vertical;
+  min-height: 100px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.formTextarea:focus {
+  outline: none;
+  border-color: #ea580c;
+  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.1);
+}
+
+.formSelect {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 16px;
+  background-color: white;
+  transition: border-color 0.2s ease;
+  cursor: pointer;
+}
+
+.formSelect:focus {
+  outline: none;
+  border-color: #ea580c;
+  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.1);
+}
+
+.reviewSubmitButton {
+  width: 100%;
+  background-color: #059669;
+  color: white;
+  padding: 16px 32px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 8px;
+}
+
+.reviewSubmitButton:hover {
+  background-color: #047857;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+}
+
+.reviewSubmitButton:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.reservationForm {
+  background-color: #f9fafb;
+  padding: 32px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+.formTitle {
+  font-size: 24px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 24px 0;
 }
 
 .formGroup {
-    margin-bottom: 18px;
+  margin-bottom: 20px;
 }
 
-.label {
-    display: block;
-    margin-bottom: 6px;
-    font-weight: 500;
-    color: #333;
+.formLabel {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 6px;
 }
 
-.input {
-    width: 100%;
-    padding: 10px 12px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    font-size: 15px;
-    outline: none;
-    transition: border 0.2s;
+.formInput {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 16px;
+  background-color: white;
+  transition: border-color 0.2s ease;
 }
 
-.input:focus {
-    border: 1.5px solid #0070f3;
+.formInput:focus {
+  outline: none;
+  border-color: #ea580c;
+  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.1);
 }
 
-.button {
-    width: 100%;
-    padding: 12px 0;
-    border-radius: 8px;
-    border: none;
-    background: #0070f3;
-    color: #fff;
-    font-weight: 600;
-    font-size: 17px;
-    cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0,112,243,0.08);
-    transition: background 0.2s;
+.formInput::placeholder {
+  color: #9ca3af;
 }
 
-.button:disabled {
-    background: #bdbdbd;
-    cursor: not-allowed;
+.soldOutSection {
+  background-color: #fef2f2;
+  padding: 32px;
+  border-radius: 12px;
+  border: 1px solid #fecaca;
+  text-align: center;
 }
 
-.noReservations {
-    margin-top: 24px;
-    color: #e53935;
-    background: #fff3f3;
-    padding: 16px;
-    border-radius: 8px;
-    text-align: center;
-    font-weight: 500;
+.soldOutTitle {
+  font-size: 24px;
+  font-weight: 600;
+  color: #dc2626;
+  margin: 0 0 16px 0;
+}
+
+.soldOutText {
+  font-size: 16px;
+  color: #6b7280;
+  margin: 0 0 24px 0;
+  line-height: 1.5;
+}
+
+.error {
+  text-align: center;
+  padding: 64px 16px;
+}
+
+.error h1 {
+  font-size: 24px;
+  color: #111827;
+  margin: 0 0 24px 0;
+}
+
+@media (min-width: 640px) {
+  .headerContent {
+    padding: 24px 24px;
+  }
+  
+  .main {
+    padding: 32px 24px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .headerContent {
+    padding: 24px 32px;
+  }
+  
+  .main {
+    padding: 32px 32px;
+  }
 }
