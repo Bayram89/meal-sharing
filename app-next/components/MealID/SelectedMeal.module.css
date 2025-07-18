@@ -282,7 +282,7 @@
   transition: border-color 0.2s ease;
   resize: vertical;
   min-height: 100px;
-  font-family: inherit;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .formTextarea:focus {
