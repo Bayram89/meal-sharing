@@ -1,85 +1,111 @@
 import express from "express";
-import knex from "../database_client.js";
+import knex, { knexRawQuery } from "../database_client.js";
 
 const reviewsRouter = express.Router();
 
 // ADD a NEW REVIEW TO THE DATABASE
 reviewsRouter.post("/", async (req, res) => {
-  const { stars, meal_id: mealId, title, description } = req.body;
+  try {
+    const { stars, meal_id: mealId, title, description } = req.body;
 
-  // Insert new review with stars, meal_id, title, and description
-  const insertQuery = `INSERT INTO Review (stars, meal_id, title, description) VALUES (?, ?, ?, ?)`;
-  await knex.raw(insertQuery, [stars, mealId, title, description]);
-
-  // Get the inserted review
-  const selectQuery = `SELECT * FROM Review ORDER BY id DESC LIMIT 1;`;
-  const [newReview] = await knex.raw(selectQuery);
-  res.json(newReview[0]);
+    // Insert new review with stars, meal_id, title, and description
+    const insertQuery = `INSERT INTO Review (stars, meal_id, title, description) VALUES (?, ?, ?, ?) RETURNING *`;
+    const newReview = await knexRawQuery(insertQuery, [
+      stars,
+      mealId,
+      title,
+      description,
+    ]);
+    res.json(newReview[0]);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Something went wrong" });
+  }
 });
 
 // UPDATE A REVIEW
 reviewsRouter.put("/:id", async (req, res) => {
-  const reviewId = req.params.id;
-  const stars = req.body.stars;
+  try {
+    const reviewId = req.params.id;
+    const stars = req.body.stars;
 
-  // Here'sQL query to update the review
-  const updateQuery = `UPDATE Review SET stars = ${stars} WHERE id = ${reviewId}`;
+    // SQL query to update the review
+    const updateQuery = `UPDATE Review SET stars = ${stars} WHERE id = ${reviewId} RETURNING *`;
 
-  // We make the updated query run down here
-  await knex.raw(updateQuery);
+    // Execute the update query and get the updated review
+    const updatedReview = await knexRawQuery(updateQuery);
 
-  // We're fetching updated review here
-  const selectQuery = `SELECT * FROM Review WHERE id = ${reviewId}`;
-  const updatedReview = await knex.raw(selectQuery);
-
-  // Send the updated review as a response
-  res.json(updatedReview[0]);
+    // Send the updated review as a response
+    res.json(updatedReview[0]);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Something went wrong" });
+  }
 });
 
 // DELETE A REVIEW
 reviewsRouter.delete("/:id", async (req, res) => {
-  const reviewId = req.params.id;
+  try {
+    const reviewId = req.params.id;
 
-  // The SQL to delete the review
-  const deleteQuery = `DELETE FROM Review WHERE id = ${reviewId}`;
+    // The SQL to delete the review
+    const deleteQuery = `DELETE FROM Review WHERE id = ${reviewId}`;
 
-  // We run the delete query
-  await knex.raw(deleteQuery);
+    // We run the delete query
+    await knex.raw(deleteQuery);
 
-  // Send a success response to let the user know the review was deleted
-  res.status(204).send(); // 204 No Content is a common response for successful DELETE requests
+    // Send a success response to let the user know the review was deleted
+    res.status(204).send(); // 204 No Content is a common response for successful DELETE requests
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Something went wrong" });
+  }
 });
 
 // GET ALL REVIEWS
 reviewsRouter.get("/", async (req, res) => {
-  const reviewQuery = `SELECT * FROM Review`;
-  const [reviews] = await knex.raw(reviewQuery);
-  res.json(reviews);
+  try {
+    const reviewQuery = `SELECT * FROM Review`;
+    const reviews = await knexRawQuery(reviewQuery);
+    res.json(reviews);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Something went wrong" });
+  }
 });
 
 // GET A REVIEW BY ID
 reviewsRouter.get("/:id", async (req, res) => {
-  const reviewId = req.params.id;
+  try {
+    const reviewId = req.params.id;
 
-  const reviewQuery = `SELECT * FROM Review WHERE id = ${reviewId}`;
-  const [review] = await knex.raw(reviewQuery);
-  if (!review || review.length === 0) {
-    return res.status(404).json({ error: "Review not found" });
+    const reviewQuery = `SELECT * FROM Review WHERE id = ${reviewId}`;
+    const review = await knexRawQuery(reviewQuery);
+    if (!review || review.length === 0) {
+      return res.status(404).json({ error: "Review not found" });
+    }
+    res.json(review);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Something went wrong" });
   }
-  res.json(review);
 });
 
 reviewsRouter.get("/meals/:meal_id", async (req, res) => {
-  const mealId = req.params.meal_id;
+  try {
+    const mealId = req.params.meal_id;
 
-  const reviewsQuery = `SELECT * FROM Review WHERE meal_id = ${mealId}`;
-  const [reviews] = await knex.raw(reviewsQuery);
-  if (!reviews || reviews.length === 0) {
-    return res.status(404).json({ error: "No reviews found for this meal" });
+    const reviewsQuery = `SELECT * FROM Review WHERE meal_id = ${mealId}`;
+    const reviews = await knexRawQuery(reviewsQuery);
+    if (!reviews || reviews.length === 0) {
+      return res.status(404).json({ error: "No reviews found for this meal" });
+    }
+
+    res.json(reviews);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Something went wrong" });
   }
-
-  res.json(reviews);
 });
 
 export default reviewsRouter;
-
