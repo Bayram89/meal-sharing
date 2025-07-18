@@ -19,8 +19,7 @@ export default function AllMeals({ meals }) {
   useEffect(() => {
     let filtered = meals.filter(meal => {
       const matchesSearch = meal.title?.toLowerCase().includes(search.toLowerCase()) ||
-                           meal.description?.toLowerCase().includes(search.toLowerCase()) ||
-                           meal.location?.toLowerCase().includes(search.toLowerCase());
+                           meal.description?.toLowerCase().includes(search.toLowerCase())
       return matchesSearch;
     });
 
@@ -29,10 +28,7 @@ export default function AllMeals({ meals }) {
       let aValue, bValue;
       
       switch (sortKey) {
-        case "title":
-          aValue = a.title.toLowerCase();
-          bValue = b.title.toLowerCase();
-          break;
+      
         case "price":
           aValue = parseFloat(a.price);
           bValue = parseFloat(b.price);
@@ -45,13 +41,7 @@ export default function AllMeals({ meals }) {
           aValue = a.max_reservations;
           bValue = b.max_reservations;
           break;
-        case "location":
-          aValue = a.location.toLowerCase();
-          bValue = b.location.toLowerCase();
-          break;
-        default:
-          aValue = a.title.toLowerCase();
-          bValue = b.title.toLowerCase();
+      
       }
 
       if (sortDir === "asc") {
@@ -150,7 +140,7 @@ export default function AllMeals({ meals }) {
               <ChefHat className={styles.logo} />
               <div>
                 <h1 className={styles.title}>All Meals</h1>
-                <p className={styles.subtitle}>Discover all our culinary experiences</p>
+                <p className={styles.subtitle}>Discover taste experiences</p>
               </div>
             </div>
           </div>
@@ -174,12 +164,7 @@ export default function AllMeals({ meals }) {
           <div className={styles.sortSection}>
             <span className={styles.sortLabel}>Sort by:</span>
             <div className={styles.sortButtons}>
-              <button
-                onClick={() => handleSortChange("title")}
-                className={`${styles.sortButton} ${sortKey === "title" ? styles.sortButtonActive : ""}`}
-              >
-                Name {getSortIcon("title")}
-              </button>
+              
               <button
                 onClick={() => handleSortChange("price")}
                 className={`${styles.sortButton} ${sortKey === "price" ? styles.sortButtonActive : ""}`}
@@ -198,12 +183,7 @@ export default function AllMeals({ meals }) {
               >
                 Spots {getSortIcon("max_reservations")}
               </button>
-              <button
-                onClick={() => handleSortChange("location")}
-                className={`${styles.sortButton} ${sortKey === "location" ? styles.sortButtonActive : ""}`}
-              >
-                Location {getSortIcon("location")}
-              </button>
+             
             </div>
           </div>
           
@@ -266,7 +246,7 @@ export default function AllMeals({ meals }) {
           <div className={styles.noResults}>
             <ChefHat className={styles.noResultsIcon} />
             <h3 className={styles.noResultsTitle}>No meals found</h3>
-            <p className={styles.noResultsText}>Try adjusting your search or filter criteria</p>
+            <p className={styles.noResultsText}>Try another word</p>
           </div>
         )}
       </main>
