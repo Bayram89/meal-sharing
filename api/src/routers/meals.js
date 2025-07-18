@@ -1,5 +1,5 @@
 import express from "express";
-import knex from "../database_client.js";
+import knex, { knexRawQuery } from "../database_client.js";
 
 const mealsRouter = express.Router();
 
@@ -93,42 +93,62 @@ mealsRouter.get("/", async (req, res) => {
 
 // 2. The route to get all meals in the FUTURE
 mealsRouter.get("/future-meals", async (req, res) => {
-  const futureMealsQuery = "SELECT * FROM meal WHERE `when` > NOW()";
-  const [futureMeals] = await knex.raw(futureMealsQuery);
-  if (!futureMeals || futureMeals.length === 0) {
-    return res.status(404).json({ error: "No future meal found" });
+  try {
+    const futureMealsQuery = "SELECT * FROM meal WHERE `when` > NOW()";
+    const futureMeals = await knexRawQuery(futureMealsQuery);
+    if (!futureMeals || futureMeals.length === 0) {
+      return res.status(404).json({ error: "No future meal found" });
+    }
+    res.json(futureMeals);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Something went wrong" });
   }
-  res.json(futureMeals);
 });
 
 // 3. The route to get all meals in the PAST
 mealsRouter.get("/past-meals", async (req, res) => {
-  const pastMealsQuery = "SELECT * FROM meal WHERE `when` < NOW()";
-  const [pastMeals] = await knex.raw(pastMealsQuery);
-  if (!pastMeals || pastMeals.length === 0) {
-    return res.status(404).json({ error: "No past meal found" });
+  try {
+    const pastMealsQuery = "SELECT * FROM meal WHERE `when` < NOW()";
+    const pastMeals = await knexRawQuery(pastMealsQuery);
+    if (!pastMeals || pastMeals.length === 0) {
+      return res.status(404).json({ error: "No past meal found" });
+    }
+    res.json(pastMeals);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Something went wrong" });
   }
-  res.json(pastMeals);
 });
 
 // 4. The route to get the FIRST meal
 mealsRouter.get("/first-meal", async (req, res) => {
-  const firstMealQuery = "SELECT * FROM meal ORDER BY id LIMIT 1";
-  const [firstMeal] = await knex.raw(firstMealQuery);
-  if (!firstMeal || firstMeal.length === 0) {
-    return res.status(404).json({ error: "No first meal found" });
+  try {
+    const firstMealQuery = "SELECT * FROM meal ORDER BY id LIMIT 1";
+    const firstMeal = await knexRawQuery(firstMealQuery);
+    if (!firstMeal || firstMeal.length === 0) {
+      return res.status(404).json({ error: "No first meal found" });
+    }
+    res.json(firstMeal);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Something went wrong" });
   }
-  res.json(firstMeal);
 });
 
 // 5. The route to get the LAST meal
 mealsRouter.get("/last-meal", async (req, res) => {
-  const lastMealQuery = "SELECT * FROM meal ORDER BY id DESC LIMIT 1";
-  const [lastMeal] = await knex.raw(lastMealQuery);
-  if (!lastMeal || lastMeal.length === 0) {
-    return res.status(404).json({ error: "No last meal found" });
+  try {
+    const lastMealQuery = "SELECT * FROM meal ORDER BY id DESC LIMIT 1";
+    const lastMeal = await knexRawQuery(lastMealQuery);
+    if (!lastMeal || lastMeal.length === 0) {
+      return res.status(404).json({ error: "No last meal found" });
+    }
+    res.json(lastMeal);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Something went wrong" });
   }
-  res.json(lastMeal);
 });
 
 // 1. Search - meals by name
@@ -137,33 +157,39 @@ mealsRouter.get("/last-meal", async (req, res) => {
 // query params
 // /meals?name=chickenxffdate=2023-10-01
 mealsRouter.get("/search-meals", async (req, res) => {
-  // /meals?name=dessert
-  console.log(req.query);
-  const name = req.query.name;
-  const mealQuery = `SELECT * FROM meal WHERE title LIKE '%${name}%'`;
-  // const mealQuery = "SELECT * FROM meal WHERE name LIKE '%" + name + "%'";
-  const [meal] = await knex.raw(mealQuery);
-  if (!meal || meal.length === 0) {
-    return res.status(404).json({ error: "No meals found" });
+  try {
+    // /meals?name=dessert
+    console.log(req.query);
+    const name = req.query.name;
+    const mealQuery = `SELECT * FROM meal WHERE title LIKE '%${name}%'`;
+    // const mealQuery = "SELECT * FROM meal WHERE name LIKE '%" + name + "%'";
+    const meal = await knexRawQuery(mealQuery);
+    if (!meal || meal.length === 0) {
+      return res.status(404).json({ error: "No meals found" });
+    }
+    res.json(meal);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Something went wrong" });
   }
-  res.json(meal);
 });
 
 // 2. Route to add a new meal (POST)
 mealsRouter.post("/", async (req, res) => {
-  // Extract the title from the request body
-  const { title } = req.body;
+  try {
+    // Extract the title from the request body
+    const { title } = req.body;
 
-  // Insert the new meal into the database using a raw SQL query with direct string interpolation
-  const insertQuery = `INSERT INTO meal (title, \`when\`) VALUES ('${title}', NOW())`;
-  await knex.raw(insertQuery);
+    // Insert the new meal into the database using a raw SQL query with direct string interpolation
+    const insertQuery = `INSERT INTO meal (title, \`when\`) VALUES ('${title}', NOW()) RETURNING *`;
+    const newMeal = await knexRawQuery(insertQuery);
 
-  // Retrieve the newly added meal from the database by its title
-  const selectQuery = `SELECT * FROM meal WHERE title = '${title}'`;
-  const newMeal = await knex.raw(selectQuery);
-
-  // Send the newly added meal as a response
-  res.status(201).json(newMeal[0]);
+    // Send the newly added meal as a response
+    res.status(201).json(newMeal[0]);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Something went wrong" });
+  }
 });
 
 // 3. Route to get a meal by ID
@@ -175,8 +201,7 @@ mealsRouter.get("/:id", async (req, res) => {
   try {
     const mealId = req.params.id;
     const mealQuery = `SELECT * FROM meal WHERE id = ${mealId}`;
-    const mealResult = await knex.raw(mealQuery);
-    const meals = mealResult[0] || mealResult.rows || mealResult; 
+    const meals = await knexRawQuery(mealQuery);
     const firstMealRetrieved = Array.isArray(meals) ? meals[0] : undefined;
 
     if (!firstMealRetrieved) {
@@ -184,13 +209,12 @@ mealsRouter.get("/:id", async (req, res) => {
     }
 
     const reservationsCountQuery = `SELECT COUNT(*) AS reservationCount FROM reservation WHERE meal_id = ${mealId}`;
-    const [countResult] = await knex.raw(reservationsCountQuery);
-    const reservationCount = countResult[0]?.reservationCount || 0;
+    const countData = await knexRawQuery(reservationsCountQuery);
+    const reservationCount =
+      (Array.isArray(countData) ? countData[0] : countData)?.reservationCount ||
+      0;
 
     firstMealRetrieved.reservationCount = reservationCount;
-
-console.log(firstMealRetrieved);
-
 
     res.json(firstMealRetrieved);
   } catch (error) {
@@ -201,36 +225,41 @@ console.log(firstMealRetrieved);
 
 // 4. Route to update a meal by ID
 mealsRouter.put("/:id", async (req, res) => {
-  const mealId = req.params.id;
-  const location = req.body.location;
+  try {
+    const mealId = req.params.id;
+    const location = req.body.location;
 
-  // Construct the SQL query to update the meal
-  const updateQuery = `UPDATE meal SET location = '${location}' WHERE id = ${mealId}`;
+    // Construct the SQL query to update the meal
+    const updateQuery = `UPDATE meal SET location = '${location}' WHERE id = ${mealId} RETURNING *`;
 
-  // Execute the update query
-  await knex.raw(updateQuery);
+    // Execute the update query and get the updated meal
+    const updatedMeal = await knexRawQuery(updateQuery);
 
-  // Retrieve the updated meal from the database
-  const selectQuery = `SELECT * FROM meal WHERE id = ${mealId}`;
-  const [updatedMeal] = await knex.raw(selectQuery);
-  const [firstUpdatedMeal] = updatedMeal;
-
-  // Send the updated meal as a response
-  res.json(firstUpdatedMeal);
+    // Send the updated meal as a response
+    res.json(updatedMeal[0]);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Something went wrong" });
+  }
 });
 
 // 5. Route to delete a meal by ID
 mealsRouter.delete("/:id", async (req, res) => {
-  const mealId = req.params.id;
+  try {
+    const mealId = req.params.id;
 
-  // Construct the SQL query to delete the meal
-  const deleteQuery = `DELETE FROM meal WHERE id = ${mealId}`;
+    // Construct the SQL query to delete the meal
+    const deleteQuery = `DELETE FROM meal WHERE id = ${mealId}`;
 
-  // Execute the delete query
-  await knex.raw(deleteQuery);
+    // Execute the delete query
+    await knex.raw(deleteQuery);
 
-  // Send a success response
-  res.status(204).send(); // 204 No Content is a common response for successful DELETE requests
+    // Send a success response
+    res.status(204).send(); // 204 No Content is a common response for successful DELETE requests
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Something went wrong" });
+  }
 });
 
 export default mealsRouter;
