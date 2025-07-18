@@ -5,16 +5,15 @@ const reviewsRouter = express.Router();
 
 // ADD a NEW REVIEW TO THE DATABASE
 reviewsRouter.post("/", async (req, res) => {
-  const stars = req.body.stars;
-  const mealId = req.body.meal_id;
+  const { stars, meal_id: mealId, title, description } = req.body;
 
-  // Here I'm inserting a new review qith only the stars field
-  const insertQuery = `INSERT INTO Review (stars, meal_id) VALUES (${stars}, ${mealId})`;
-  await knex.raw(insertQuery);
+  // Insert new review with stars, meal_id, title, and description
+  const insertQuery = `INSERT INTO Review (stars, meal_id, title, description) VALUES (?, ?, ?, ?)`;
+  await knex.raw(insertQuery, [stars, mealId, title, description]);
 
-  //Then I get this inserted review
+  // Get the inserted review
   const selectQuery = `SELECT * FROM Review ORDER BY id DESC LIMIT 1;`;
-  const newReview = await knex.raw(selectQuery);
+  const [newReview] = await knex.raw(selectQuery);
   res.json(newReview[0]);
 });
 
