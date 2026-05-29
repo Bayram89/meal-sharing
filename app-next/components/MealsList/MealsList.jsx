@@ -12,19 +12,29 @@ import styles from "./MealList.module.css";
 
 function MealsList() {
   const [meals, setMeals] = useState([]);
+  const [error, setError] = useState("");
   const router = useRouter();
 
   useEffect(() => {
     fetch(api("meals?limit=10"))
-      .then((res) => res.json())
+      .then(async (res) => {
+        if (!res.ok) {
+          throw new Error(`Failed to fetch meals (${res.status})`);
+        }
+        return res.json();
+      })
       .then((data) => {
-        setMeals(data);
+        setMeals(Array.isArray(data) ? data : []);
+        setError("");
       })
       .catch((err) => {
         console.error("Error fetching meals:", err);
+        setMeals([]);
+        setError("Meals are temporarily unavailable. Please try again later.");
       });
   }, []);
 
+  if (error) return <p>{error}</p>;
   if (meals.length === 0) return <p>Loading meals...</p>;
 
    const formatDate = (dateString) => {

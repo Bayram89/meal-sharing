@@ -4,31 +4,42 @@ import React, { useState } from "react";
 import Link from "next/link";
 import styles from "./AllMeals.module.css";
 import api from "@/utils/api";
-import { Search, Clock, Users, ChefHat, ArrowLeft, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+import {
+  Search,
+  Clock,
+  Users,
+  ChefHat,
+  ArrowLeft,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+} from "lucide-react";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-
 export default function AllMeals({ meals }) {
-    const [search, setSearch] = useState("");
-    const [sortKey, setSortKey] = useState("title");
-    const [sortDir, setSortDir] = useState("asc");
-    const [filteredMeals, setFilteredMeals] = useState(Array.isArray(meals) ? meals : []);
-    const router = useRouter();
+  const safeMeals = Array.isArray(meals) ? meals : [];
+  const [search, setSearch] = useState("");
+  const [sortKey, setSortKey] = useState("title");
+  const [sortDir, setSortDir] = useState("asc");
+  const [filteredMeals, setFilteredMeals] = useState(
+    safeMeals
+  );
+  const router = useRouter();
 
   useEffect(() => {
-    let filtered = meals.filter(meal => {
-      const matchesSearch = meal.title?.toLowerCase().includes(search.toLowerCase()) ||
-                           meal.description?.toLowerCase().includes(search.toLowerCase())
+    let filtered = safeMeals.filter((meal) => {
+      const matchesSearch =
+        meal.title?.toLowerCase().includes(search.toLowerCase()) ||
+        meal.description?.toLowerCase().includes(search.toLowerCase());
       return matchesSearch;
     });
 
-    // sorting the results 
+    // sorting the results
     filtered.sort((a, b) => {
       let aValue, bValue;
-      
+
       switch (sortKey) {
-      
         case "price":
           aValue = parseFloat(a.price);
           bValue = parseFloat(b.price);
@@ -41,7 +52,6 @@ export default function AllMeals({ meals }) {
           aValue = a.max_reservations;
           bValue = b.max_reservations;
           break;
-      
       }
 
       if (sortDir === "asc") {
@@ -52,7 +62,7 @@ export default function AllMeals({ meals }) {
     });
 
     setFilteredMeals(filtered);
-  }, [search, sortKey, sortDir, meals]);
+  }, [search, sortKey, sortDir, safeMeals]);
 
   const handleSortChange = (key) => {
     if (sortKey === key) {
@@ -67,68 +77,71 @@ export default function AllMeals({ meals }) {
     if (sortKey !== key) {
       return <ArrowUpDown className={styles.sortIcon} />;
     }
-    return sortDir === "asc" ? 
-      <ArrowUp className={styles.sortIconActive} /> : 
-      <ArrowDown className={styles.sortIconActive} />;
+    return sortDir === "asc" ? (
+      <ArrowUp className={styles.sortIconActive} />
+    ) : (
+      <ArrowDown className={styles.sortIconActive} />
+    );
   };
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      weekday: 'short',
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
+    return date.toLocaleDateString("en-US", {
+      weekday: "short",
+      year: "numeric",
+      month: "short",
+      day: "numeric",
     });
   };
 
   const formatTime = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit'
+    return date.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
-  
-    const handleMealClick = (mealId) => {
+
+  const handleMealClick = (mealId) => {
     router.push(`/meals/${mealId}`);
   };
-  
-    const fetchMeals = async (searchValue, key, dir) => {
-        try {
-            const params = [
-                searchValue ? `title=${encodeURIComponent(searchValue)}` : "",
-                `sortKey=${encodeURIComponent(key)}`,
-                `sortDir=${encodeURIComponent(dir)}`
-            ].filter(Boolean).join("&");
-            const res = await fetch(api(`meals?${params}`));
-            const data = await res.json();
-            setFilteredMeals(Array.isArray(data) ? data : []);
-        } catch (error) {
-            setFilteredMeals([]);
-        }
-    };
 
-    const handleSearch = async (e) => {
-        e.preventDefault();
-        fetchMeals(search, sortKey, sortDir);
-    };
+  const fetchMeals = async (searchValue, key, dir) => {
+    try {
+      const params = [
+        searchValue ? `title=${encodeURIComponent(searchValue)}` : "",
+        `sortKey=${encodeURIComponent(key)}`,
+        `sortDir=${encodeURIComponent(dir)}`,
+      ]
+        .filter(Boolean)
+        .join("&");
+      const res = await fetch(api(`meals?${params}`));
+      const data = await res.json();
+      setFilteredMeals(Array.isArray(data) ? data : []);
+    } catch (error) {
+      setFilteredMeals([]);
+    }
+  };
 
-    const handleSortKeyChange = (e) => {
-        const newSortKey = e.target.value;
-        setSortKey(newSortKey);
-        fetchMeals(search, newSortKey, sortDir);
-    };
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    fetchMeals(search, sortKey, sortDir);
+  };
 
-    const handleSortDirChange = (e) => {
-        const newSortDir = e.target.value;
-        setSortDir(newSortDir);
-        fetchMeals(search, sortKey, newSortDir);
-    };
+  const handleSortKeyChange = (e) => {
+    const newSortKey = e.target.value;
+    setSortKey(newSortKey);
+    fetchMeals(search, newSortKey, sortDir);
+  };
 
-     return (
+  const handleSortDirChange = (e) => {
+    const newSortDir = e.target.value;
+    setSortDir(newSortDir);
+    fetchMeals(search, sortKey, newSortDir);
+  };
+
+  return (
     <div className={styles.container}>
-      
       <header className={styles.header}>
         <div className={styles.headerContent}>
           <div className={styles.headerLeft}>
@@ -148,7 +161,6 @@ export default function AllMeals({ meals }) {
       </header>
 
       <main className={styles.main}>
-
         <div className={styles.searchSection}>
           <div className={styles.searchContainer}>
             <Search className={styles.searchIcon} />
@@ -160,54 +172,61 @@ export default function AllMeals({ meals }) {
               className={styles.searchInput}
             />
           </div>
-          
+
           <div className={styles.sortSection}>
             <span className={styles.sortLabel}>Sort by:</span>
             <div className={styles.sortButtons}>
-              
               <button
                 onClick={() => handleSortChange("price")}
-                className={`${styles.sortButton} ${sortKey === "price" ? styles.sortButtonActive : ""}`}
+                className={`${styles.sortButton} ${
+                  sortKey === "price" ? styles.sortButtonActive : ""
+                }`}
               >
                 Price {getSortIcon("price")}
               </button>
               <button
                 onClick={() => handleSortChange("when")}
-                className={`${styles.sortButton} ${sortKey === "when" ? styles.sortButtonActive : ""}`}
+                className={`${styles.sortButton} ${
+                  sortKey === "when" ? styles.sortButtonActive : ""
+                }`}
               >
                 Date {getSortIcon("when")}
               </button>
               <button
                 onClick={() => handleSortChange("max_reservations")}
-                className={`${styles.sortButton} ${sortKey === "max_reservations" ? styles.sortButtonActive : ""}`}
+                className={`${styles.sortButton} ${
+                  sortKey === "max_reservations" ? styles.sortButtonActive : ""
+                }`}
               >
                 Spots {getSortIcon("max_reservations")}
               </button>
-             
             </div>
           </div>
-          
-          
         </div>
 
         <div className={styles.resultsCount}>
-          <p>{filteredMeals.length} meal{filteredMeals.length !== 1 ? 's' : ''} found</p>
+          <p>
+            {filteredMeals.length} meal{filteredMeals.length !== 1 ? "s" : ""}{" "}
+            found
+          </p>
         </div>
-
 
         <div className={styles.mealsGrid}>
           {filteredMeals.map((meal) => (
-<Link key={meal.id} href={`/meals/${meal.id}`} className={styles.mealCard}>              <div className={styles.imageContainer}>
+            <Link
+              key={meal.id}
+              href={`/meals/${meal.id}`}
+              className={styles.mealCard}
+            >
+              {" "}
+              <div className={styles.imageContainer}>
                 <img
                   src={meal.image}
                   alt={meal.title}
                   className={styles.mealImage}
                 />
-                <div className={styles.priceBadge}>
-                  ${meal.price}
-                </div>
+                <div className={styles.priceBadge}>${meal.price}</div>
               </div>
-              
               <div className={styles.cardContent}>
                 <div className={styles.cardHeader}>
                   <h3 className={styles.mealName}>{meal.title}</h3>
@@ -215,10 +234,8 @@ export default function AllMeals({ meals }) {
                     {meal.max_reservations} spots
                   </span>
                 </div>
-                <p className={styles.mealDescription}>
-                  {meal.description}
-                </p>
-                
+                <p className={styles.mealDescription}>{meal.description}</p>
+
                 <div className={styles.mealInfo}>
                   <div className={styles.infoItem}>
                     <Clock className={styles.infoIcon} />
@@ -229,7 +246,7 @@ export default function AllMeals({ meals }) {
                     <span>{formatTime(meal.when)}</span>
                   </div>
                 </div>
-                
+
                 <div className={styles.locationSection}>
                   <div className={styles.locationInfo}>
                     <Users className={styles.infoIcon} />
@@ -240,8 +257,7 @@ export default function AllMeals({ meals }) {
             </Link>
           ))}
         </div>
-        
-                
+
         {filteredMeals.length === 0 && (
           <div className={styles.noResults}>
             <ChefHat className={styles.noResultsIcon} />
@@ -250,7 +266,6 @@ export default function AllMeals({ meals }) {
           </div>
         )}
       </main>
-
     </div>
   );
 }
