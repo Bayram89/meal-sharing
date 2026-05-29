@@ -62,8 +62,8 @@ Get-Content "C:\Users\Bayram\Projects\meal-sharing\api\src\mealsharing.postgres.
 
 The PostgreSQL import recreates:
 
-- 16 meals
+- 10 meals
 - 5 reservations
-- 11 reviews
+- 10 reviews
 
 This is only the data preserved in the repository SQL file. Any later production-only data that was never exported from Render is not present here.

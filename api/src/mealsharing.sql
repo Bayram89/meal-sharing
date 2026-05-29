@@ -1,19 +1,18 @@
 CREATE DATABASE IF NOT EXISTS meal_sharing;
 USE meal_sharing;
 
-# Meals Table
 CREATE TABLE Meal (
     id INT PRIMARY KEY AUTO_INCREMENT,
     title VARCHAR(255) NOT NULL,
     description TEXT,
     location VARCHAR(255),
+    image VARCHAR(500),
     `when` DATETIME NOT NULL,
     max_reservations INT,
     price DECIMAL(10, 2),
     created_date DATE
 );
 
-# Create Reservation table
 CREATE TABLE Reservation (
     id INT PRIMARY KEY AUTO_INCREMENT,
     number_of_guests INT,
@@ -25,7 +24,6 @@ CREATE TABLE Reservation (
     FOREIGN KEY (meal_id) REFERENCES Meal(id)
 );
 
-# Create Review table
 CREATE TABLE Review (
     id INT PRIMARY KEY AUTO_INCREMENT,
     title VARCHAR(255),
@@ -36,205 +34,33 @@ CREATE TABLE Review (
     FOREIGN KEY (meal_id) REFERENCES Meal(id)
 );
 
-USE meal_sharing;
+INSERT INTO Meal (id, title, description, location, image, `when`, max_reservations, price, created_date) VALUES
+(1, 'Nordic Supper Club', 'A six-course seasonal tasting menu with rye crisps, smoked butter, and candlelit communal tables.', 'Vesterbro, Copenhagen', 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1200&q=80', '2026-06-12 19:00:00', 16, 42.00, '2026-05-20'),
+(2, 'Harbor Seafood Night', 'Fresh oysters, grilled cod, and lemon herb potatoes inspired by the Copenhagen waterfront.', 'Nordhavn, Copenhagen', 'https://images.unsplash.com/photo-1559847844-5315695dadae?auto=format&fit=crop&w=1200&q=80', '2026-06-19 18:30:00', 18, 48.00, '2026-05-20'),
+(3, 'Rooftop Taco Social', 'Slow-cooked beef tacos, charred corn, and bright salsas served with skyline views and music.', 'Norrebro, Copenhagen', 'https://images.unsplash.com/photo-1552332386-f8dd00dc2f85?auto=format&fit=crop&w=1200&q=80', '2026-06-26 19:30:00', 24, 24.00, '2026-05-21'),
+(4, 'Garden Brunch Feast', 'An elegant weekend brunch with shakshuka, cardamom buns, fresh berries, and pour-over coffee.', 'Frederiksberg, Copenhagen', 'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=1200&q=80', '2026-07-05 11:00:00', 20, 28.00, '2026-05-21'),
+(5, 'Fire & Smoke BBQ Night', 'Oak-smoked brisket, grilled vegetables, and house pickles served family-style at long wooden tables.', 'Refshaleoen, Copenhagen', 'https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?auto=format&fit=crop&w=1200&q=80', '2026-07-17 18:00:00', 30, 36.00, '2026-05-22'),
+(6, 'Pasta & Natural Wine', 'Handmade tagliatelle, slow braised mushroom ragu, and a relaxed natural wine pairing.', 'Christianshavn, Copenhagen', 'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=1200&q=80', '2026-08-08 19:00:00', 14, 34.00, '2026-05-22'),
+(7, 'Coastal Green Table', 'A refined vegetarian dinner with grilled courgettes, whipped feta, herbs, and summer greens.', 'Osterbro, Copenhagen', 'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1200&q=80', '2026-08-21 18:30:00', 18, 31.00, '2026-05-23'),
+(8, 'Sourdough Pizza Night', 'Wood-fired pizzas, burrata, and crisp salads in a cozy neighborhood studio kitchen.', 'Amager, Copenhagen', 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1200&q=80', '2026-09-04 19:00:00', 22, 26.00, '2026-05-23'),
+(9, 'Candlelit Curry Evening', 'Fragrant coconut curry, warm flatbread, and spiced rice served in an intimate home setting.', 'Valby, Copenhagen', 'https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?auto=format&fit=crop&w=1200&q=80', '2026-09-18 18:30:00', 16, 29.00, '2026-05-24'),
+(10, 'Dessert Atelier', 'A plated dessert experience featuring citrus tart, dark chocolate mousse, and espresso service.', 'Indre By, Copenhagen', 'https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=1200&q=80', '2026-10-02 20:00:00', 12, 22.00, '2026-05-24');
 
-SELECT * FROM Reservation;
+INSERT INTO Reservation (id, number_of_guests, meal_id, created_date, contact_phonenumber, contact_name, contact_email) VALUES
+(1, 2, 1, '2026-05-25', '20112233', 'Sofia Jensen', 'sofia.jensen@example.com'),
+(2, 4, 2, '2026-05-26', '22114455', 'Noah Larsen', 'noah.larsen@example.com'),
+(3, 3, 3, '2026-05-26', '33115566', 'Emma Nielsen', 'emma.nielsen@example.com'),
+(4, 2, 6, '2026-05-27', '44116677', 'Oliver Hansen', 'oliver.hansen@example.com'),
+(5, 5, 8, '2026-05-28', '55117788', 'Clara Madsen', 'clara.madsen@example.com');
 
-SELECT * FROM Review;
-
-SELECT * FROM Meal;
-
-# Queries about Meal table
-INSERT INTO Meal (id, title, description, location, `when`, max_reservations, price, created_date) VALUES
-(1, 'Pasta Night', 'Delicious Italian pasta dishes', 'Downtown Restaurant', '2023-10-01 19:00:00', 20, 15.99, '2023-09-20'),
-(2, 'Sushi Feast', 'Fresh sushi and sashimi', 'Sakura Sushi Bar', '2023-10-02 18:30:00', 15, 25.50, '2023-09-21'),
-(3, 'BBQ Party', 'Grilled meats and sides', 'Backyard BBQ Spot', '2023-10-03 17:00:00', 30, 20.00, '2023-09-22'),
-(4, 'Vegan Delight', 'Plant-based gourmet meals', 'Green Earth Cafe', '2023-10-04 18:00:00', 25, 18.75, '2023-09-23'),
-(5, 'Seafood Extravaganza', 'Fresh seafood platters', 'Ocean Breeze Restaurant', '2023-10-05 19:30:00', 20, 30.00, '2023-09-24'),
-(6, 'Taco Tuesday', 'Authentic Mexican tacos', 'Taco Truck', '2023-10-06 19:00:00', 40, 12.50, '2023-09-25'),
-(7, 'Indian Curry Night', 'Spicy Indian curries and naan', 'Curry House', '2023-10-07 18:00:00', 20, 22.00, '2023-09-26'),
-(8, 'French Bistro Evening', 'Classic French dishes and wine', 'Paris Bistro', '2023-10-08 19:30:00', 15, 35.00, '2023-09-27');
-
-
-SELECT * FROM Meal;
-
-# Changing some of the meal data
-UPDATE Meal
-SET `when` = '2024-09-05 20:30:00'
-WHERE id = 2;
-
-UPDATE Meal
-SET `when` = '2024-10-05 16:30:00'
-WHERE id = 4;
-
-UPDATE Meal
-SET `when` = '2024-10-05 17:00:00'
-WHERE id = 5;
-
-SELECT * FROM Meal;
-
-# Adding new meals
-INSERT INTO Meal (title, description, location, `when`, max_reservations, price, created_date) VALUES
-('Taco Tuesday', 'Authentic Mexican tacos', 'Taco Truck', '2023-10-06 19:00:00', 40, 12.50, '2023-09-25'),
-('Indian Curry Night', 'Spicy Indian curries and naan', 'Curry House', '2023-10-07 18:00:00', 20, 22.00, '2023-09-26'),
-('French Bistro Evening', 'Classic French dishes and wine', 'Paris Bistro', '2023-10-08 19:30:00', 15, 35.00, '2023-09-27');
-
-INSERT INTO Meal (title, description, location, `when`, max_reservations, price, created_date) VALUES
-('Doner Kebab Night', 'Delicious doner kebabs and sides', 'Kebab House', '2026-10-09 18:00:00', 30, 10.00, '2025-09-28'),
-('Pizza Party', 'Variety of pizzas and drinks', 'Pizza Place', '2027-10-10 19:00:00', 25, 15.00, '2025-09-29'),
-('Burger Bash', 'Juicy burgers and fries', 'Burger Joint', '2028-10-11 18:30:00', 20, 12.00, '2025-09-30'),
-('Salad Bar', 'Fresh salads and dressings', 'Healthy Eats', '2029-10-12 19:00:00', 15, 8.50, '2025-10-01'),
-('Dessert Night', 'Assorted desserts and pastries', 'Sweet Tooth Bakery', '2030-10-13 18:00:00', 10, 5.00, '2025-10-02');
-
-
-# Getting a meal with id 5
-SELECT title
-FROM Meal
-WHERE id = 5;
-
-# Updating a meal with id 7
-UPDATE Meal
-SET title = 'Updated Indian Curry Night', description = 'Authentic Indian curries and naan bread'
-WHERE id = 7;
-
-# Reservation Table
-SELECT * FROM Reservation;
-
-INSERT INTO Reservation (number_of_guests, meal_id, created_date, contact_phonenumber, contact_name, contact_email)
-VALUES 
-(4, 1, '2023-09-30', '1234567890', 'John Doe', 'johndoe@example.com'),
-(2, 2, '2023-09-30', '9876543210', 'Jane Smith', 'janesmith@example.com'),
-(3, 3, '2023-09-30', '5551234567', 'Alice Johnson', 'alicejohnson@example.com'),
-(5, 4, '2023-09-30', '4449876543', 'Bob Brown', 'bobbrown@example.com'),
-(1, 5, '2023-09-30', '3335557777', 'Charlie White', 'charliewhite@example.com');
-
-# Get a reservation with id 8
-SELECT * 
-FROM reservation
-WHERE id = 8;
-
-UPDATE reservation
-SET number_of_guests = 6
-WHERE id = 8;
-
-# Review Table
-SELECT * FROM Review;
-
-INSERT INTO Review (title, description, meal_id, stars, created_date)
-VALUES 
-('Amazing Pasta Night', 'The pasta was delicious and the atmosphere was great!', 1, 5, '2023-09-30'),
-('Sushi Heaven', 'Best sushi I have ever had!', 2, 4, '2023-09-30'),
-('BBQ Bliss', 'The BBQ was fantastic, loved the grilled meats!', 3, 5, '2023-09-30'),
-('Vegan Paradise', 'So many tasty vegan options!', 4, 4, '2023-09-30'),
-('Seafood Delight', 'Fresh seafood and great service!', 5, 5, '2023-09-30'),
-('Taco Fiesta', 'The tacos were authentic and flavorful!', 6, 5, '2023-09-30'),
-('Curry Perfection', 'The curries were spicy and delicious!', 7, 5, '2023-09-30'),
-('French Elegance', 'The French dishes were exquisite and paired well with wine!', 8, 5, '2023-09-30');
-
-SELECT * FROM Review;
-
-INSERT INTO Review (title, description, meal_id, stars, created_date)
-VALUES 
-('Taco Tuesday', 'Authentic Mexican tacos', 6, 5, '2023-09-30'),
-('Indian Curry Night', 'Spicy Indian curries and naan', 7, 4, '2023-09-30'),
-('French Bistro Evening', 'Classic French dishes and wine', 8, 5, '2023-09-30');
-
-SELECT * FROM Review;
-
-
-SELECT * FROM Review
-WHERE meal_id = 11;
-
-UPDATE Review
-SET stars = 4
-WHERE meal_id = 11;
-
-SELECT * FROM Review;
-
-UPDATE review
-SET title = 'Updated Review Title', description = 'Updated review description'
-WHERE id = 11;
-
-SELECT * FROM Review;
-SELECT * FROM Review
-WHERE meal_id = 11;
-
-# Meals that are relatively cheaper than the rest of the meals
-SELECT *
-FROM Meal
-WHERE price < 20;
-
-# Meals that has available reservations
-SELECT *
-FROM Meal
-WHERE max_reservations > 0;
-
-# Meals that are available in the next 30 days
-# MEAL table that has 'night' word somewhere in the title
-SELECT * 
-FROM meal
-WHERE title like '%Night%'
-
-# eals that has two dates
-SELECT *
-FROM meal
-WHERE `when` BETWEEN '2023-10-01' AND '2023-10-31';
-
-SELECT *
-FROM meal
-LIMIT 11;
-
-# Meals that have reviews
-SELECT *
-FROM review
-WHERE stars > 1;
-
-# Reservations with a certain meal and/or date
-SELECT *
-FROM reservation
-WHERE meal_id = 1
-ORDER BY created_date;
-
-# Putting meals by date
-SELECT *
-FROM meal
-ORDER BY `when` DESC;
-
-# Putting meals by price
-SELECT *
-FROM meal
-ORDER BY price DESC;
-
-# Putting meals by title
-SELECT *    
-FROM meal
-ORDER BY title ASC;
-
-# Putting meals by location
-SELECT *
-FROM meal
-ORDER BY location ASC;
-
-# Putting meals by max_reservations
-SELECT *
-FROM meal
-ORDER BY max_reservations DESC;
-
-# Putting meals by stars
-SELECT *
-FROM review
-ORDER BY stars DESC;
-
-#Putting meals by avarage number of stars in the review table
-SELECT meal_id, AVG(stars) AS average_stars
-FROM review
-GROUP BY meal_id
-HAVING AVG(stars) > 3
-ORDER BY average_stars DESC;
-
-# Putting meals by number of reviews
-SELECT meal_id, COUNT(*) AS number_of_reviews
-FROM review
-GROUP BY meal_id
-HAVING COUNT(*) > 1
-ORDER BY number_of_reviews DESC;
+INSERT INTO Review (id, title, description, meal_id, stars, created_date) VALUES
+(1, 'Beautiful evening', 'Warm hosting, thoughtful plating, and a menu that felt genuinely memorable from start to finish.', 1, 5, '2026-05-25'),
+(2, 'Fresh and polished', 'The seafood was excellent and the setting made it feel like a small private restaurant by the harbor.', 2, 5, '2026-05-25'),
+(3, 'Fun atmosphere', 'Relaxed, social, and full of flavor. This is the kind of dinner you want to bring friends to.', 3, 4, '2026-05-26'),
+(4, 'Brunch done right', 'Everything looked great on the table and the cardamom buns were the highlight of the morning.', 4, 5, '2026-05-26'),
+(5, 'Excellent comfort food', 'Generous portions, great smoke flavor, and a host who clearly enjoys creating a full experience.', 5, 5, '2026-05-27'),
+(6, 'Cozy and elegant', 'The pasta was silky, the wine pairing worked beautifully, and the whole evening felt easy and refined.', 6, 5, '2026-05-27'),
+(7, 'Creative vegetarian menu', 'Fresh, vibrant, and much more exciting than a standard vegetarian dinner.', 7, 4, '2026-05-28'),
+(8, 'Neighborhood favorite', 'Crisp crust, good music, and an atmosphere that felt welcoming from the moment we arrived.', 8, 5, '2026-05-28'),
+(9, 'Full of warmth', 'The curry had real depth and the candlelit setup made the dinner feel especially thoughtful.', 9, 5, '2026-05-28'),
+(10, 'Perfect ending to the week', 'A small, stylish dessert event with strong coffee and beautifully balanced sweets.', 10, 5, '2026-05-29');
