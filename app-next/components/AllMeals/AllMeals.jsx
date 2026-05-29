@@ -172,7 +172,6 @@ export default function AllMeals({ meals }) {
                   </span>
                   <span className={styles.metaBadge}>{meal.max_reservations} guests</span>
                 </div>
-
                 <h3 className={styles.mealName}>{meal.title}</h3>
                 <p className={styles.mealDescription}>{meal.description}</p>
 
