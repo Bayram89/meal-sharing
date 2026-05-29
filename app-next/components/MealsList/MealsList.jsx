@@ -1,22 +1,30 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import MealCard from "./MealCard";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { CalendarDays, Clock3, MapPin, Users } from "lucide-react";
 import api from "@/utils/api";
-import Link from 'next/link';
-
-
-import { Search, Clock, Users, ChefHat } from "lucide-react";
 import styles from "./MealList.module.css";
+
+const formatDate = (dateString) =>
+  new Date(dateString).toLocaleDateString("en-GB", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+  });
+
+const formatTime = (dateString) =>
+  new Date(dateString).toLocaleTimeString("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
 function MealsList() {
   const [meals, setMeals] = useState([]);
   const [error, setError] = useState("");
-  const router = useRouter();
 
   useEffect(() => {
-    fetch(api("meals?limit=10"))
+    fetch(api("meals?limit=6"))
       .then(async (res) => {
         if (!res.ok) {
           throw new Error(`Failed to fetch meals (${res.status})`);
@@ -34,109 +42,69 @@ function MealsList() {
       });
   }, []);
 
-  if (error) return <p>{error}</p>;
-  if (meals.length === 0) return <p>Loading meals...</p>;
-
-   const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      weekday: 'short',
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
-
-  const formatTime = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
   return (
-    <div className={styles.container}>
-
-      {/* Main Content */}
-      <main className={styles.main}>
-        {/* Search and Filter Section */}
-
- <div className={styles.searchSection}>
-          <div className={styles.sectionHeader}>
-            <h2 className={styles.sectionTitle}>Featured Meals</h2>
-            <Link href="/meals" className={styles.seeAllButton}>
-              See All Meals
-            </Link>
-          </div>
+    <section className={styles.section}>
+      <div className={styles.sectionHeader}>
+        <div>
+          <p className={styles.sectionEyebrow}>Upcoming experiences</p>
+          <h2 className={styles.sectionTitle}>Book a table with confidence.</h2>
+          <p className={styles.sectionText}>
+            Smaller guest counts, clearer details, and warmer presentation make
+            every listing easier to trust at a glance.
+          </p>
         </div>
 
+        <Link href="/meals" className={styles.seeAllButton}>
+          View all meals
+        </Link>
+      </div>
 
-        {/* Recipe Grid */}
-        <div className={styles.recipeGrid}>
-          {meals.map((event) => (
-            <div key={event.id} className={styles.recipeCard}>
-              <div className={styles.imageContainer}>
-                <img
-                  src={event.image}
-                  alt={event.title}
-                  className={styles.recipeImage}
-                />
-                <div className={styles.categoryBadge}>${event.price}</div>
-              </div>
+      {error ? <p className={styles.feedback}>{error}</p> : null}
+      {!error && meals.length === 0 ? (
+        <p className={styles.feedback}>Loading upcoming meals...</p>
+      ) : null}
 
-              <div className={styles.cardContent}>
-                <div className={styles.cardHeader}>
-                  <h3 className={styles.recipeName}>{event.title}</h3>
-                  <span className={styles.locationBadge}>
-                    {event.max_reservations} spots
-                  </span>
-                </div>
-                <p className={styles.recipeDescription}>{event.description}</p>
-
-                <div className={styles.recipeInfo}>
-                  <div className={styles.infoItem}>
-                    <Clock className={styles.infoIcon} />
-                    <span>{formatDate(event.when)}</span>
-                  </div>
-                  <div className={styles.infoItem}>
-                    <Clock className={styles.infoIcon} />
-                    <span>{formatTime(event.when)}</span>
-                  </div>
-                </div>
-
-                <div className={styles.locationSection}>
-                  <div className={styles.locationInfo}>
-                    <Users className={styles.infoIcon} />
-                    <span className={styles.locationText}>
-                      {event.location}
-                    </span>
-                  </div>
-                </div>
-              </div>
+      <div className={styles.recipeGrid}>
+        {meals.map((meal) => (
+          <Link key={meal.id} href={`/meals/${meal.id}`} className={styles.recipeCard}>
+            <div className={styles.imageContainer}>
+              <img src={meal.image} alt={meal.title} className={styles.recipeImage} />
+              <div className={styles.priceBadge}>DKK {meal.price}</div>
             </div>
-          ))}
-        </div>
 
-        {/* No Results */}
-        {meals.length === 0 && (
-          <div className={styles.noResults}>
-            <ChefHat className={styles.noResultsIcon} />
-            <h3 className={styles.noResultsTitle}>No events found</h3>
-            <p className={styles.noResultsText}>
-              Try adjusting your search or filter criteria
-            </p>
-          </div>
-        )}
-      </main>
+            <div className={styles.cardContent}>
+              <div className={styles.cardTopRow}>
+                <p className={styles.locationLine}>
+                  <MapPin className={styles.inlineIcon} />
+                  {meal.location}
+                </p>
+                <span className={styles.spotsBadge}>{meal.max_reservations} seats</span>
+              </div>
 
-      {/* Footer */}
-      <footer className={styles.footer}>
-        <div className={styles.footerContent}>
-          <p>© 2025 Food Events. Made with ❤️ for food lovers.</p>
-        </div>
-      </footer>
-    </div>
+              <h3 className={styles.recipeName}>{meal.title}</h3>
+              <p className={styles.recipeDescription}>{meal.description}</p>
+
+              <div className={styles.recipeInfo}>
+                <div className={styles.infoItem}>
+                  <CalendarDays className={styles.infoIcon} />
+                  <span>{formatDate(meal.when)}</span>
+                </div>
+                <div className={styles.infoItem}>
+                  <Clock3 className={styles.infoIcon} />
+                  <span>{formatTime(meal.when)}</span>
+                </div>
+                <div className={styles.infoItem}>
+                  <Users className={styles.infoIcon} />
+                  <span>Hosted table</span>
+                </div>
+              </div>
+
+              <span className={styles.cardLink}>View details</span>
+            </div>
+          </Link>
+        ))}
+      </div>
+    </section>
   );
 }
 

@@ -1,10 +1,33 @@
 "use client";
 
-import React, { useState } from 'react';
-import Link from 'next/link';
-import { ArrowLeft, Clock, Users, MapPin, Calendar, DollarSign } from 'lucide-react';
-import styles from './SelectedMeal.module.css';
-import api from '@/utils/api';
+import React, { useState } from "react";
+import Link from "next/link";
+import {
+  ArrowLeft,
+  Clock3,
+  Users,
+  MapPin,
+  CalendarDays,
+  DollarSign,
+  ShieldCheck,
+  Star,
+} from "lucide-react";
+import styles from "./SelectedMeal.module.css";
+import api from "@/utils/api";
+
+const formatDate = (dateString) =>
+  new Date(dateString).toLocaleDateString("en-GB", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+
+const formatTime = (dateString) =>
+  new Date(dateString).toLocaleTimeString("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
 export default function SelectedMeal({ meal }) {
   const [form, setForm] = useState({
@@ -19,10 +42,20 @@ export default function SelectedMeal({ meal }) {
   });
   const [loading, setLoading] = useState(false);
   const [reviewLoading, setReviewLoading] = useState(false);
+  const [reservationStatus, setReservationStatus] = useState("");
+  const [reviewStatus, setReviewStatus] = useState("");
 
-  if (!meal) return <div>No meal selected.</div>;
+  if (!meal) {
+    return (
+      <div className={styles.emptyState}>
+        <h1>This meal is unavailable</h1>
+        <p>Please return to the listings and choose another hosted meal.</p>
+      </div>
+    );
+  }
 
-  const availableReservations = meal.max_reservations - meal.reservationCount;
+  const reservedSeats = Number(meal.reservationCount ?? 0);
+  const availableReservations = Math.max(meal.max_reservations - reservedSeats, 0);
   const hasAvailableReservations = availableReservations > 0;
 
   const handleChange = (e) => {
@@ -32,27 +65,31 @@ export default function SelectedMeal({ meal }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setReservationStatus("");
+
     try {
       const res = await fetch(api("reservations"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           meal_id: meal.id,
+          number_of_guests: 1,
           ...form,
         }),
       });
-      if (res.ok) {
-        alert("Reservation successful!");
-        setForm({
-          contact_phonenumber: "",
-          contact_name: "",
-          contact_email: "",
-        });
-      } else {
-        alert("Reservation failed. Please try again.");
+
+      if (!res.ok) {
+        throw new Error("Reservation failed");
       }
-    } catch (err) {
-      alert("An error occurred. Please try again.");
+
+      setReservationStatus("Your reservation request has been received.");
+      setForm({
+        contact_phonenumber: "",
+        contact_name: "",
+        contact_email: "",
+      });
+    } catch (error) {
+      setReservationStatus("We could not save your reservation just now.");
     } finally {
       setLoading(false);
     }
@@ -60,15 +97,17 @@ export default function SelectedMeal({ meal }) {
 
   const handleReviewChange = (e) => {
     const { name, value } = e.target;
-    setReviewForm({ 
-      ...reviewForm, 
-      [name]: name === 'stars' ? parseInt(value) : value 
+    setReviewForm({
+      ...reviewForm,
+      [name]: name === "stars" ? parseInt(value, 10) : value,
     });
   };
 
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
     setReviewLoading(true);
+    setReviewStatus("");
+
     try {
       const res = await fetch(api("reviews"), {
         method: "POST",
@@ -78,48 +117,31 @@ export default function SelectedMeal({ meal }) {
           ...reviewForm,
         }),
       });
-      if (res.ok) {
-        alert("Review submitted successfully!");
-        setReviewForm({
-          title: "",
-          description: "",
-          stars: 5,
-        });
-      } else {
-        alert("Review submission failed. Please try again.");
+
+      if (!res.ok) {
+        throw new Error("Review failed");
       }
-    } catch (err) {
-      alert("An error occurred. Please try again.");
+
+      setReviewStatus("Thank you. Your review has been submitted.");
+      setReviewForm({
+        title: "",
+        description: "",
+        stars: 5,
+      });
+    } catch (error) {
+      setReviewStatus("We could not submit your review just now.");
     } finally {
       setReviewLoading(false);
     }
   };
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
-
-  const formatTime = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
   return (
-    <div className={styles.container}>
+    <div className={styles.pageShell}>
       <header className={styles.header}>
         <div className={styles.headerContent}>
           <Link href="/meals" className={styles.backButton}>
             <ArrowLeft className={styles.backIcon} />
-            Back to All Meals
+            Back to all meals
           </Link>
         </div>
       </header>
@@ -127,11 +149,7 @@ export default function SelectedMeal({ meal }) {
       <main className={styles.main}>
         <div className={styles.mealContainer}>
           <div className={styles.imageSection}>
-            <img
-              src={meal.image}
-              alt={meal.title}
-              className={styles.mealImage}
-            />
+            <img src={meal.image} alt={meal.title} className={styles.mealImage} />
             <div className={styles.priceBadge}>
               <DollarSign className={styles.priceIcon} />
               {meal.price}
@@ -139,126 +157,154 @@ export default function SelectedMeal({ meal }) {
           </div>
 
           <div className={styles.contentSection}>
-            <div className={styles.mealHeader}>
-              <h1 className={styles.mealTitle}>{meal.title}</h1>
-              <div className={styles.spotsBadge}>
-                {availableReservations} of {meal.max_reservations} spots available
+            <section className={styles.introSection}>
+              <div className={styles.introCopy}>
+                <p className={styles.eyebrow}>Hosted dinner experience</p>
+                <h1 className={styles.mealTitle}>{meal.title}</h1>
+                <p className={styles.mealDescription}>{meal.description}</p>
               </div>
-            </div>
 
-            <p className={styles.mealDescription}>{meal.description}</p>
+              <div className={styles.trustPanel}>
+                <div className={styles.trustBadge}>
+                  <ShieldCheck className={styles.trustIcon} />
+                  Clear details before booking
+                </div>
+                <div className={styles.trustStat}>
+                  <span className={styles.trustValue}>{availableReservations}</span>
+                  <span className={styles.trustLabel}>seats currently open</span>
+                </div>
+                <div className={styles.trustStat}>
+                  <span className={styles.trustValue}>
+                    <Star className={styles.starIcon} />
+                    5.0
+                  </span>
+                  <span className={styles.trustLabel}>guest-ready presentation</span>
+                </div>
+              </div>
+            </section>
 
-            <div className={styles.detailsGrid}>
+            <section className={styles.detailsGrid}>
               <div className={styles.detailItem}>
-                <Calendar className={styles.detailIcon} />
-                <div className={styles.detailContent}>
+                <CalendarDays className={styles.detailIcon} />
+                <div>
                   <span className={styles.detailLabel}>Date</span>
                   <span className={styles.detailValue}>{formatDate(meal.when)}</span>
                 </div>
               </div>
-
               <div className={styles.detailItem}>
-                <Clock className={styles.detailIcon} />
-                <div className={styles.detailContent}>
+                <Clock3 className={styles.detailIcon} />
+                <div>
                   <span className={styles.detailLabel}>Time</span>
                   <span className={styles.detailValue}>{formatTime(meal.when)}</span>
                 </div>
               </div>
-
               <div className={styles.detailItem}>
                 <MapPin className={styles.detailIcon} />
-                <div className={styles.detailContent}>
+                <div>
                   <span className={styles.detailLabel}>Location</span>
                   <span className={styles.detailValue}>{meal.location}</span>
                 </div>
               </div>
-
               <div className={styles.detailItem}>
                 <Users className={styles.detailIcon} />
-                <div className={styles.detailContent}>
+                <div>
                   <span className={styles.detailLabel}>Capacity</span>
-                  <span className={styles.detailValue}>{meal.max_reservations} people</span>
+                  <span className={styles.detailValue}>
+                    {reservedSeats} reserved of {meal.max_reservations}
+                  </span>
                 </div>
               </div>
-            </div>
+            </section>
 
-            {hasAvailableReservations ? (
-              <form onSubmit={handleSubmit} className={styles.reservationForm}>
-                <h3 className={styles.formTitle}>Make a Reservation</h3>
-                
-                <div className={styles.formGroup}>
-                  <label htmlFor="contact_name" className={styles.formLabel}>
-                    Full Name
-                  </label>
-                  <input
-                    type="text"
-                    id="contact_name"
-                    name="contact_name"
-                    value={form.contact_name}
-                    onChange={handleChange}
-                    required
-                    className={styles.formInput}
-                    placeholder="Enter your full name"
-                  />
-                </div>
+            <section className={styles.formGrid}>
+              {hasAvailableReservations ? (
+                <form onSubmit={handleSubmit} className={styles.panel}>
+                  <h2 className={styles.panelTitle}>Reserve a seat</h2>
+                  <p className={styles.panelIntro}>
+                    Share your details and we will hold your place for this hosted
+                    meal.
+                  </p>
 
-                <div className={styles.formGroup}>
-                  <label htmlFor="contact_email" className={styles.formLabel}>
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    id="contact_email"
-                    name="contact_email"
-                    value={form.contact_email}
-                    onChange={handleChange}
-                    required
-                    className={styles.formInput}
-                    placeholder="Enter your email address"
-                  />
-                <div className={styles.formGroup}>
-                  <label htmlFor="contact_phonenumber" className={styles.formLabel}>
-                    Phone Number
-                  </label>
-                  <input
-                    type="tel"
-                    id="contact_phonenumber"
-                    name="contact_phonenumber"
-                    value={form.contact_phonenumber}
-                    onChange={handleChange}
-                    required
-                    className={styles.formInput}
-                    placeholder="Enter your phone number"
-                  />
-                </div>
-                </div>
-                <div className={styles.actionSection}>
-                  <button 
-                    type="submit" 
+                  <div className={styles.formGroup}>
+                    <label htmlFor="contact_name" className={styles.formLabel}>
+                      Full name
+                    </label>
+                    <input
+                      type="text"
+                      id="contact_name"
+                      name="contact_name"
+                      value={form.contact_name}
+                      onChange={handleChange}
+                      required
+                      className={styles.formInput}
+                      placeholder="Your full name"
+                    />
+                  </div>
+
+                  <div className={styles.formGroup}>
+                    <label htmlFor="contact_email" className={styles.formLabel}>
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      id="contact_email"
+                      name="contact_email"
+                      value={form.contact_email}
+                      onChange={handleChange}
+                      required
+                      className={styles.formInput}
+                      placeholder="name@example.com"
+                    />
+                  </div>
+
+                  <div className={styles.formGroup}>
+                    <label htmlFor="contact_phonenumber" className={styles.formLabel}>
+                      Phone number
+                    </label>
+                    <input
+                      type="tel"
+                      id="contact_phonenumber"
+                      name="contact_phonenumber"
+                      value={form.contact_phonenumber}
+                      onChange={handleChange}
+                      required
+                      className={styles.formInput}
+                      placeholder="Your phone number"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
                     disabled={loading}
-                    className={styles.reserveButton}
+                    className={styles.primaryButton}
                   >
-                    {loading ? 'Processing...' : 'Reserve Your Spot'}
+                    {loading ? "Sending request..." : "Reserve your seat"}
                   </button>
-                </div>
-              </form>
-            ) : (
-              <div className={styles.soldOutSection}>
-                <h3 className={styles.soldOutTitle}>Event Fully Booked</h3>
-                <p className={styles.soldOutText}>
-                  Unfortunately, this event is fully booked. Check back later for availability.
-                </p>
-              </div>
-            )}
 
-            {/* Submit Review Section */}
-            <div className={styles.reviewSection}>
-              <form onSubmit={handleReviewSubmit} className={styles.reviewForm}>
-                <h3 className={styles.reviewTitle}>Submit a Review</h3>
-                
+                  {reservationStatus ? (
+                    <p className={styles.statusMessage}>{reservationStatus}</p>
+                  ) : null}
+                </form>
+              ) : (
+                <div className={styles.panel}>
+                  <h2 className={styles.panelTitle}>Currently fully booked</h2>
+                  <p className={styles.panelIntro}>
+                    This event is full right now. Keep it on your list and check
+                    back for openings or future hosting dates.
+                  </p>
+                </div>
+              )}
+
+              <form onSubmit={handleReviewSubmit} className={styles.panel}>
+                <h2 className={styles.panelTitle}>Leave a review</h2>
+                <p className={styles.panelIntro}>
+                  Help future guests understand what the experience felt like in
+                  practice.
+                </p>
+
                 <div className={styles.formGroup}>
                   <label htmlFor="review_title" className={styles.formLabel}>
-                    Review Title
+                    Review title
                   </label>
                   <input
                     type="text"
@@ -268,13 +314,13 @@ export default function SelectedMeal({ meal }) {
                     onChange={handleReviewChange}
                     required
                     className={styles.formInput}
-                    placeholder="Give your review a title"
+                    placeholder="A short summary"
                   />
                 </div>
 
                 <div className={styles.formGroup}>
                   <label htmlFor="review_description" className={styles.formLabel}>
-                    Review Description
+                    Review
                   </label>
                   <textarea
                     id="review_description"
@@ -282,15 +328,15 @@ export default function SelectedMeal({ meal }) {
                     value={reviewForm.description}
                     onChange={handleReviewChange}
                     required
-                    rows={4}
+                    rows={5}
                     className={styles.formTextarea}
-                    placeholder="Share your experience with this meal..."
+                    placeholder="Share what made the evening memorable"
                   />
                 </div>
 
                 <div className={styles.formGroup}>
                   <label htmlFor="review_stars" className={styles.formLabel}>
-                    Rating (1-5 stars)
+                    Rating
                   </label>
                   <select
                     id="review_stars"
@@ -300,23 +346,27 @@ export default function SelectedMeal({ meal }) {
                     required
                     className={styles.formSelect}
                   >
-                    <option value={1}>1 Star - Poor</option>
-                    <option value={2}>2 Stars - Fair</option>
-                    <option value={3}>3 Stars - Good</option>
-                    <option value={4}>4 Stars - Very Good</option>
-                    <option value={5}>5 Stars - Excellent</option>
+                    <option value={5}>5 - Excellent</option>
+                    <option value={4}>4 - Very good</option>
+                    <option value={3}>3 - Good</option>
+                    <option value={2}>2 - Fair</option>
+                    <option value={1}>1 - Poor</option>
                   </select>
                 </div>
 
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   disabled={reviewLoading}
-                  className={styles.reviewSubmitButton}
+                  className={styles.secondaryButton}
                 >
-                  {reviewLoading ? 'Submitting...' : 'Submit Review'}
+                  {reviewLoading ? "Submitting..." : "Submit review"}
                 </button>
+
+                {reviewStatus ? (
+                  <p className={styles.statusMessage}>{reviewStatus}</p>
+                ) : null}
               </form>
-            </div>
+            </section>
           </div>
         </div>
       </main>

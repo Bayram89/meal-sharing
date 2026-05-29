@@ -1,120 +1,79 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import styles from "./AllMeals.module.css";
 import api from "@/utils/api";
 import {
   Search,
-  Clock,
+  Clock3,
   Users,
   ChefHat,
   ArrowLeft,
-  ArrowUpDown,
-  ArrowUp,
-  ArrowDown,
+  MapPin,
+  CalendarDays,
 } from "lucide-react";
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+
+const formatDate = (dateString) =>
+  new Date(dateString).toLocaleDateString("en-GB", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+  });
+
+const formatTime = (dateString) =>
+  new Date(dateString).toLocaleTimeString("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
 export default function AllMeals({ meals }) {
   const safeMeals = Array.isArray(meals) ? meals : [];
   const [search, setSearch] = useState("");
-  const [sortKey, setSortKey] = useState("title");
+  const [sortKey, setSortKey] = useState("when");
   const [sortDir, setSortDir] = useState("asc");
-  const [filteredMeals, setFilteredMeals] = useState(
-    safeMeals
-  );
-  const router = useRouter();
+  const [filteredMeals, setFilteredMeals] = useState(safeMeals);
 
   useEffect(() => {
     let filtered = safeMeals.filter((meal) => {
-      const matchesSearch =
-        meal.title?.toLowerCase().includes(search.toLowerCase()) ||
-        meal.description?.toLowerCase().includes(search.toLowerCase());
-      return matchesSearch;
+      const query = search.toLowerCase();
+      return (
+        meal.title?.toLowerCase().includes(query) ||
+        meal.description?.toLowerCase().includes(query) ||
+        meal.location?.toLowerCase().includes(query)
+      );
     });
 
-    // sorting the results
-    filtered.sort((a, b) => {
-      let aValue, bValue;
+    filtered = [...filtered].sort((a, b) => {
+      let aValue = a[sortKey];
+      let bValue = b[sortKey];
 
-      switch (sortKey) {
-        case "price":
-          aValue = parseFloat(a.price);
-          bValue = parseFloat(b.price);
-          break;
-        case "when":
-          aValue = new Date(a.when);
-          bValue = new Date(b.when);
-          break;
-        case "max_reservations":
-          aValue = a.max_reservations;
-          bValue = b.max_reservations;
-          break;
+      if (sortKey === "price" || sortKey === "max_reservations") {
+        aValue = Number(aValue);
+        bValue = Number(bValue);
       }
 
-      if (sortDir === "asc") {
-        return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
-      } else {
-        return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
+      if (sortKey === "when") {
+        aValue = new Date(aValue).getTime();
+        bValue = new Date(bValue).getTime();
       }
+
+      return sortDir === "asc" ? aValue - bValue : bValue - aValue;
     });
 
     setFilteredMeals(filtered);
-  }, [search, sortKey, sortDir, safeMeals]);
+  }, [safeMeals, search, sortKey, sortDir]);
 
-  const handleSortChange = (key) => {
-    if (sortKey === key) {
-      setSortDir(sortDir === "asc" ? "desc" : "asc");
-    } else {
-      setSortKey(key);
-      setSortDir("asc");
-    }
-  };
-
-  const getSortIcon = (key) => {
-    if (sortKey !== key) {
-      return <ArrowUpDown className={styles.sortIcon} />;
-    }
-    return sortDir === "asc" ? (
-      <ArrowUp className={styles.sortIconActive} />
-    ) : (
-      <ArrowDown className={styles.sortIconActive} />
-    );
-  };
-
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      weekday: "short",
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
-
-  const formatTime = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
-  const handleMealClick = (mealId) => {
-    router.push(`/meals/${mealId}`);
-  };
-
-  const fetchMeals = async (searchValue, key, dir) => {
+  const fetchMeals = async (searchValue, nextSortKey, nextSortDir) => {
     try {
       const params = [
         searchValue ? `title=${encodeURIComponent(searchValue)}` : "",
-        `sortKey=${encodeURIComponent(key)}`,
-        `sortDir=${encodeURIComponent(dir)}`,
+        `sortKey=${encodeURIComponent(nextSortKey)}`,
+        `sortDir=${encodeURIComponent(nextSortDir)}`,
       ]
         .filter(Boolean)
         .join("&");
+
       const res = await fetch(api(`meals?${params}`));
       const data = await res.json();
       setFilteredMeals(Array.isArray(data) ? data : []);
@@ -123,134 +82,112 @@ export default function AllMeals({ meals }) {
     }
   };
 
-  const handleSearch = async (e) => {
-    e.preventDefault();
-    fetchMeals(search, sortKey, sortDir);
-  };
-
-  const handleSortKeyChange = (e) => {
-    const newSortKey = e.target.value;
-    setSortKey(newSortKey);
-    fetchMeals(search, newSortKey, sortDir);
-  };
-
-  const handleSortDirChange = (e) => {
-    const newSortDir = e.target.value;
-    setSortDir(newSortDir);
-    fetchMeals(search, sortKey, newSortDir);
-  };
-
   return (
-    <div className={styles.container}>
+    <div className={styles.pageShell}>
       <header className={styles.header}>
         <div className={styles.headerContent}>
-          <div className={styles.headerLeft}>
-            <Link href="/" className={styles.backButton}>
-              <ArrowLeft className={styles.backIcon} />
-              Back
-            </Link>
-            <div className={styles.headerInfo}>
-              <ChefHat className={styles.logo} />
-              <div>
-                <h1 className={styles.title}>All Meals</h1>
-                <p className={styles.subtitle}>Discover taste experiences</p>
-              </div>
-            </div>
+          <Link href="/" className={styles.backButton}>
+            <ArrowLeft className={styles.backIcon} />
+            Back home
+          </Link>
+
+          <div className={styles.headerInfo}>
+            <p className={styles.headerEyebrow}>All upcoming meals</p>
+            <h1 className={styles.title}>Choose the table that fits your night.</h1>
+            <p className={styles.subtitle}>
+              Browse by mood, neighborhood, timing, or guest count without the
+              clutter of a marketplace-style layout.
+            </p>
           </div>
         </div>
       </header>
 
       <main className={styles.main}>
-        <div className={styles.searchSection}>
+        <section className={styles.controlsPanel}>
           <div className={styles.searchContainer}>
             <Search className={styles.searchIcon} />
             <input
               type="text"
-              placeholder="Search all meals..."
+              placeholder="Search by meal, mood, or neighborhood"
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                fetchMeals(e.target.value, sortKey, sortDir);
+              }}
               className={styles.searchInput}
             />
           </div>
 
           <div className={styles.sortSection}>
-            <span className={styles.sortLabel}>Sort by:</span>
-            <div className={styles.sortButtons}>
-              <button
-                onClick={() => handleSortChange("price")}
-                className={`${styles.sortButton} ${
-                  sortKey === "price" ? styles.sortButtonActive : ""
-                }`}
+            <label className={styles.selectGroup}>
+              <span>Sort</span>
+              <select
+                value={sortKey}
+                onChange={(e) => {
+                  setSortKey(e.target.value);
+                  fetchMeals(search, e.target.value, sortDir);
+                }}
+                className={styles.select}
               >
-                Price {getSortIcon("price")}
-              </button>
-              <button
-                onClick={() => handleSortChange("when")}
-                className={`${styles.sortButton} ${
-                  sortKey === "when" ? styles.sortButtonActive : ""
-                }`}
+                <option value="when">Date</option>
+                <option value="price">Price</option>
+                <option value="max_reservations">Guest count</option>
+              </select>
+            </label>
+
+            <label className={styles.selectGroup}>
+              <span>Order</span>
+              <select
+                value={sortDir}
+                onChange={(e) => {
+                  setSortDir(e.target.value);
+                  fetchMeals(search, sortKey, e.target.value);
+                }}
+                className={styles.select}
               >
-                Date {getSortIcon("when")}
-              </button>
-              <button
-                onClick={() => handleSortChange("max_reservations")}
-                className={`${styles.sortButton} ${
-                  sortKey === "max_reservations" ? styles.sortButtonActive : ""
-                }`}
-              >
-                Spots {getSortIcon("max_reservations")}
-              </button>
-            </div>
+                <option value="asc">Ascending</option>
+                <option value="desc">Descending</option>
+              </select>
+            </label>
           </div>
-        </div>
+        </section>
 
         <div className={styles.resultsCount}>
-          <p>
-            {filteredMeals.length} meal{filteredMeals.length !== 1 ? "s" : ""}{" "}
-            found
-          </p>
+          <p>{filteredMeals.length} curated meals available</p>
         </div>
 
         <div className={styles.mealsGrid}>
           {filteredMeals.map((meal) => (
-            <Link
-              key={meal.id}
-              href={`/meals/${meal.id}`}
-              className={styles.mealCard}
-            >
-              {" "}
+            <Link key={meal.id} href={`/meals/${meal.id}`} className={styles.mealCard}>
               <div className={styles.imageContainer}>
-                <img
-                  src={meal.image}
-                  alt={meal.title}
-                  className={styles.mealImage}
-                />
-                <div className={styles.priceBadge}>${meal.price}</div>
+                <img src={meal.image} alt={meal.title} className={styles.mealImage} />
+                <div className={styles.priceBadge}>DKK {meal.price}</div>
               </div>
+
               <div className={styles.cardContent}>
-                <div className={styles.cardHeader}>
-                  <h3 className={styles.mealName}>{meal.title}</h3>
-                  <span className={styles.spotsBadge}>
-                    {meal.max_reservations} spots
+                <div className={styles.cardMeta}>
+                  <span className={styles.metaLine}>
+                    <MapPin className={styles.infoIcon} />
+                    {meal.location}
                   </span>
+                  <span className={styles.metaBadge}>{meal.max_reservations} guests</span>
                 </div>
+
+                <h3 className={styles.mealName}>{meal.title}</h3>
                 <p className={styles.mealDescription}>{meal.description}</p>
 
                 <div className={styles.mealInfo}>
                   <div className={styles.infoItem}>
-                    <Clock className={styles.infoIcon} />
+                    <CalendarDays className={styles.infoIcon} />
                     <span>{formatDate(meal.when)}</span>
                   </div>
                   <div className={styles.infoItem}>
-                    <Clock className={styles.infoIcon} />
+                    <Clock3 className={styles.infoIcon} />
                     <span>{formatTime(meal.when)}</span>
                   </div>
-                </div>
-
-                <div className={styles.locationSection}>
-                  <div className={styles.locationInfo}>
+                  <div className={styles.infoItem}>
                     <Users className={styles.infoIcon} />
-                    <span className={styles.locationText}>{meal.location}</span>
+                    <span>Hosted experience</span>
                   </div>
                 </div>
               </div>
@@ -261,8 +198,10 @@ export default function AllMeals({ meals }) {
         {filteredMeals.length === 0 && (
           <div className={styles.noResults}>
             <ChefHat className={styles.noResultsIcon} />
-            <h3 className={styles.noResultsTitle}>No meals found</h3>
-            <p className={styles.noResultsText}>Try another word</p>
+            <h3 className={styles.noResultsTitle}>No meals match that search</h3>
+            <p className={styles.noResultsText}>
+              Try a different keyword, neighborhood, or sort order.
+            </p>
           </div>
         )}
       </main>
