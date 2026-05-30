@@ -2,7 +2,7 @@
 
 Meal Sharing Copenhagen is a small full-stack app for finding and booking shared dining experiences in Copenhagen.
 
-I wanted this project to feel less like a school task and more like a real product. So besides building the app itself, I also worked on improving the look and feel, cleaning up the sample content, and fixing the live deployment when the original database was lost.
+This started as a learning project, but I wanted it to feel more real. I worked on the design, cleaned up the content, and fixed the deployment so the app could stay live after the original database was lost.
 
 ## Live
 
