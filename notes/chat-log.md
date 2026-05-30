@@ -22,3 +22,9 @@ This file keeps a running summary of our Codex chat for this repository.
 - Assistant created `api/src/mealsharing.postgres.sql`, a PostgreSQL-compatible recovery script derived from the repo data.
 - Assistant updated the API routes to remove MySQL-specific raw SQL so the backend can run reliably against a new Render Postgres database.
 - Assistant added recovery instructions to `api/RECOVERY.md`.
+
+### Hospitality Redesign
+- User asked for a cleaner, simpler, more trustworthy hospitality-product redesign.
+- Assistant replaced the generic visual style with a calmer editorial direction using new typography, warmer neutral colors, and clearer spacing.
+- Assistant redesigned the homepage hero, featured meals cards, all-meals listing page, and single-meal booking page to feel more real-world and product-focused.
+- Assistant also fixed broken demo-style copy, improved information hierarchy, and made the redesigned frontend pass a production `next build`.

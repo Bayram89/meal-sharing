@@ -3,21 +3,37 @@ import knex from "../database_client.js";
 
 const mealsRouter = express.Router();
 
+const mealGroupByColumns = [
+  "meal.id",
+  "meal.title",
+  "meal.description",
+  "meal.location",
+  "meal.image",
+  "meal.host_name",
+  "meal.host_title",
+  "meal.host_bio",
+  "meal.host_tables_count",
+  "meal.host_rating",
+  "meal.when",
+  "meal.max_reservations",
+  "meal.price",
+  "meal.created_date",
+];
+
+const withReservationSummary = (query) =>
+  query
+    .leftJoin("reservation", "meal.id", "reservation.meal_id")
+    .groupBy(mealGroupByColumns)
+    .select("meal.*")
+    .select(
+      knex.raw(
+        "COALESCE(SUM(reservation.number_of_guests), 0) AS reserved_seats"
+      )
+    );
+
 const applyAvailabilityFilter = (query, availableReservations) => {
   if (availableReservations === "true" || availableReservations === "false") {
-    query
-      .leftJoin("reservation", "meal.id", "reservation.meal_id")
-      .groupBy(
-        "meal.id",
-        "meal.title",
-        "meal.description",
-        "meal.location",
-        "meal.when",
-        "meal.max_reservations",
-        "meal.price",
-        "meal.created_date"
-      )
-      .select("meal.*");
+    withReservationSummary(query);
 
     const comparator = availableReservations === "true" ? ">" : "<=";
     query.havingRaw(
@@ -48,7 +64,13 @@ mealsRouter.get("/", async (req, res) => {
     }
 
     if (title) {
-      query = query.whereILike("title", `%${title}%`);
+      query = query.where((builder) => {
+        builder
+          .whereILike("title", `%${title}%`)
+          .orWhereILike("description", `%${title}%`)
+          .orWhereILike("location", `%${title}%`)
+          .orWhereILike("host_name", `%${title}%`);
+      });
     }
 
     if (dateAfter) {
@@ -57,6 +79,10 @@ mealsRouter.get("/", async (req, res) => {
 
     if (dateBefore) {
       query = query.where("when", "<", dateBefore);
+    }
+
+    if (availableReservations !== "true" && availableReservations !== "false") {
+      query = withReservationSummary(query);
     }
 
     query = applyAvailabilityFilter(query, availableReservations);
