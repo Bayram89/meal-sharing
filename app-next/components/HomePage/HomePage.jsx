@@ -8,39 +8,39 @@ function HomePage() {
     <div className="homepageShell">
       <section className="heroPanel">
         <div className="heroCopy">
-          <p className="eyebrow">Copenhagen supper clubs</p>
-          <h1>Shared meals that feel hosted, not mass produced.</h1>
+          <p className="eyebrow">Social dining in Copenhagen</p>
+          <h1>Meet people over great food.</h1>
           <p className="heroText">
-            Discover carefully curated dinners across the city, from candlelit
-            tasting menus to relaxed neighborhood nights. Every listing is built
-            to feel personal, bookable, and real.
+            Discover hosted dining experiences across Copenhagen. Small groups,
+            verified hosts, and memorable conversations around the table.
           </p>
 
           <div className="heroActions">
             <Link href="/meals" className="primaryAction">
-              Browse upcoming meals
+              Browse experiences
             </Link>
             <p className="heroNote">
-              Small guest counts, clear pricing, and thoughtful hosting details.
+              Real people, real tables, and enough detail to know what kind of
+              evening you are saying yes to.
             </p>
           </div>
         </div>
 
         <div className="heroDetails">
           <div className="heroCard">
-            <div className="heroCardLabel">What guests value</div>
+            <div className="heroCardLabel">Why people trust it</div>
             <ul className="valueList">
               <li>
                 <ShieldCheck className="valueIcon" />
-                Clear details before booking
+                Hosts are visible before you book
               </li>
               <li>
                 <CalendarDays className="valueIcon" />
-                Timed events with realistic availability
+                Seat availability feels real, not vague
               </li>
               <li>
                 <MapPin className="valueIcon" />
-                Copenhagen neighborhoods, not generic placeholders
+                Each table has its own mood and setting
               </li>
             </ul>
           </div>
@@ -48,13 +48,13 @@ function HomePage() {
           <div className="heroStatRow">
             <div className="statCard">
               <span className="statValue">10</span>
-              <span className="statLabel">Curated meals</span>
+              <span className="statLabel">Upcoming gatherings</span>
             </div>
             <div className="statCard">
               <span className="statValue">5.0</span>
               <span className="statLabel">
                 <Star className="inlineStar" />
-                guest sentiment
+                guest experience
               </span>
             </div>
           </div>

@@ -101,19 +101,6 @@
   transform: scale(1.03);
 }
 
-.priceBadge {
-  position: absolute;
-  top: 14px;
-  left: 14px;
-  padding: 8px 12px;
-  border-radius: 999px;
-  background: rgba(255, 252, 246, 0.92);
-  color: var(--color-ink);
-  font-size: 0.84rem;
-  font-weight: 700;
-  backdrop-filter: blur(6px);
-}
-
 .cardContent {
   display: flex;
   flex: 1;
@@ -121,57 +108,35 @@
   padding: 22px 20px 20px;
 }
 
-.cardTopRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-}
-
-.locationLine {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin: 0;
-  font-size: 0.85rem;
-  color: var(--color-muted);
-}
-
-.inlineIcon,
-.infoIcon {
-  width: 16px;
-  height: 16px;
-  color: var(--color-accent);
-  flex-shrink: 0;
-}
-
-.spotsBadge {
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: var(--color-accent-soft);
-  color: var(--color-accent);
-  font-size: 0.8rem;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
 .recipeName {
-  margin: 16px 0 0;
+  margin: 0;
   font-size: 2rem;
   line-height: 0.98;
 }
 
-.recipeDescription {
-  margin: 10px 0 0;
+.trustBlock {
+  margin-top: 14px;
+}
+
+.hostLine {
+  margin: 0;
+  color: var(--color-ink);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.fillLine {
+  margin: 4px 0 0;
   color: var(--color-muted);
-  line-height: 1.65;
-  font-size: 0.96rem;
+  font-size: 0.84rem;
 }
 
 .recipeInfo {
   display: grid;
   gap: 10px;
   margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(221, 210, 195, 0.8);
 }
 
 .infoItem {
@@ -182,9 +147,51 @@
   font-size: 0.92rem;
 }
 
-.cardLink {
+.infoIcon {
+  width: 16px;
+  height: 16px;
+  color: var(--color-accent);
+  flex-shrink: 0;
+}
+
+.recipeDescription {
+  margin: 18px 0 0;
+  color: var(--color-muted);
+  line-height: 1.65;
+  font-size: 0.96rem;
+}
+
+.cardFooter {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
   margin-top: auto;
-  padding-top: 20px;
+  padding-top: 22px;
+}
+
+.priceLabel {
+  display: block;
+  color: var(--color-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.spotsBadge {
+  display: inline-flex;
+  margin-top: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255, 248, 239, 0.95);
+  color: var(--color-ink);
+  font-size: 0.8rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.cardLink {
   font-size: 0.92rem;
   font-weight: 700;
   color: var(--color-accent);
@@ -203,7 +210,7 @@
 
   .sectionHeader {
     flex-direction: column;
-    align-items: start;
+    align-items: flex-start;
   }
 
   .recipeGrid {

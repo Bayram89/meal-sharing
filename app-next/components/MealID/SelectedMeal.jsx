@@ -29,7 +29,7 @@ const formatTime = (dateString) =>
     minute: "2-digit",
   });
 
-export default function SelectedMeal({ meal }) {
+export default function SelectedMeal({ meal, reviews = [] }) {
   const [form, setForm] = useState({
     contact_phonenumber: "",
     contact_name: "",
@@ -57,6 +57,23 @@ export default function SelectedMeal({ meal }) {
   const reservedSeats = Number(meal.reservationCount ?? 0);
   const availableReservations = Math.max(meal.max_reservations - reservedSeats, 0);
   const hasAvailableReservations = availableReservations > 0;
+  const averageRating =
+    reviews.length > 0
+      ? (
+          reviews.reduce((sum, review) => sum + Number(review.stars || 0), 0) /
+          reviews.length
+        ).toFixed(1)
+      : "5.0";
+  const reviewSummaryLabel =
+    reviews.length > 0
+      ? `based on ${reviews.length} guest ${
+          reviews.length === 1 ? "review" : "reviews"
+        }`
+      : "guest reviews start this season";
+  const seatsLeftLabel =
+    availableReservations === 1
+      ? "1 seat left"
+      : `${availableReservations} seats left`;
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -159,26 +176,29 @@ export default function SelectedMeal({ meal }) {
           <div className={styles.contentSection}>
             <section className={styles.introSection}>
               <div className={styles.introCopy}>
-                <p className={styles.eyebrow}>Hosted dinner experience</p>
+                <p className={styles.eyebrow}>Real people. Real tables. Real conversations.</p>
                 <h1 className={styles.mealTitle}>{meal.title}</h1>
+                <p className={styles.hostLine}>Hosted by {meal.host_name}</p>
                 <p className={styles.mealDescription}>{meal.description}</p>
               </div>
 
               <div className={styles.trustPanel}>
                 <div className={styles.trustBadge}>
                   <ShieldCheck className={styles.trustIcon} />
-                  Clear details before booking
+                  Verified host
                 </div>
                 <div className={styles.trustStat}>
-                  <span className={styles.trustValue}>{availableReservations}</span>
-                  <span className={styles.trustLabel}>seats currently open</span>
+                  <span className={styles.trustValue}>{seatsLeftLabel}</span>
+                  <span className={styles.trustLabel}>
+                    {reservedSeats}/{meal.max_reservations} seats filled
+                  </span>
                 </div>
                 <div className={styles.trustStat}>
                   <span className={styles.trustValue}>
                     <Star className={styles.starIcon} />
-                    5.0
+                    {averageRating}
                   </span>
-                  <span className={styles.trustLabel}>guest-ready presentation</span>
+                  <span className={styles.trustLabel}>{reviewSummaryLabel}</span>
                 </div>
               </div>
             </section>
@@ -221,8 +241,8 @@ export default function SelectedMeal({ meal }) {
                 <form onSubmit={handleSubmit} className={styles.panel}>
                   <h2 className={styles.panelTitle}>Reserve a seat</h2>
                   <p className={styles.panelIntro}>
-                    Share your details and we will hold your place for this hosted
-                    meal.
+                    Share your details and save your place at {meal.host_name}'s
+                    table.
                   </p>
 
                   <div className={styles.formGroup}>
@@ -367,6 +387,30 @@ export default function SelectedMeal({ meal }) {
                 ) : null}
               </form>
             </section>
+
+            {reviews.length > 0 ? (
+              <section className={styles.reviewSection}>
+                <div className={styles.reviewSectionHeader}>
+                  <p className={styles.reviewEyebrow}>Guest notes</p>
+                  <h2 className={styles.reviewTitle}>
+                    What people say after the table ends
+                  </h2>
+                </div>
+
+                <div className={styles.reviewGrid}>
+                  {reviews.slice(0, 3).map((review) => (
+                    <article key={review.id} className={styles.reviewCard}>
+                      <div className={styles.reviewStars}>
+                        <Star className={styles.starIcon} />
+                        <span>{review.stars}.0</span>
+                      </div>
+                      <h3 className={styles.reviewCardTitle}>{review.title}</h3>
+                      <p className={styles.reviewCardText}>{review.description}</p>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            ) : null}
           </div>
         </div>
       </main>

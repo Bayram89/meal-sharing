@@ -167,69 +167,47 @@
   transform: scale(1.03);
 }
 
-.priceBadge {
-  position: absolute;
-  top: 14px;
-  left: 14px;
-  padding: 8px 12px;
-  border-radius: 999px;
-  background: rgba(255, 252, 246, 0.92);
-  font-size: 0.84rem;
-  font-weight: 700;
-}
-
 .cardContent {
+  display: flex;
+  flex-direction: column;
   padding: 22px 20px 20px;
 }
 
-.cardMeta {
-  display: flex;
-  justify-content: space-between;
-  gap: 14px;
-}
-
-.metaLine,
-.infoItem {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.metaLine {
-  color: var(--color-muted);
-  font-size: 0.85rem;
-}
-
-.metaBadge {
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: var(--color-accent-soft);
-  color: var(--color-accent);
-  font-size: 0.8rem;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
 .mealName {
-  margin: 16px 0 0;
+  margin: 0;
   font-size: 2rem;
   line-height: 0.98;
 }
 
-.mealDescription {
-  margin: 10px 0 0;
+.cardMeta {
+  margin-top: 14px;
+}
+
+.hostLine {
+  margin: 0;
+  color: var(--color-ink);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.fillLine {
+  margin: 4px 0 0;
   color: var(--color-muted);
-  font-size: 0.96rem;
-  line-height: 1.65;
+  font-size: 0.84rem;
 }
 
 .mealInfo {
   display: grid;
   gap: 10px;
   margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(221, 210, 195, 0.8);
 }
 
 .infoItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   color: var(--color-ink);
   font-size: 0.92rem;
 }
@@ -239,6 +217,50 @@
   height: 16px;
   color: var(--color-accent);
   flex-shrink: 0;
+}
+
+.mealDescription {
+  margin: 18px 0 0;
+  color: var(--color-muted);
+  font-size: 0.96rem;
+  line-height: 1.65;
+}
+
+.cardFooter {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: auto;
+  padding-top: 22px;
+}
+
+.priceLabel {
+  display: block;
+  color: var(--color-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.metaBadge {
+  display: inline-flex;
+  margin-top: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255, 248, 239, 0.95);
+  color: var(--color-ink);
+  font-size: 0.8rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.cardLink {
+  display: inline-block;
+  color: var(--color-accent);
+  font-size: 0.92rem;
+  font-weight: 700;
 }
 
 .noResults {

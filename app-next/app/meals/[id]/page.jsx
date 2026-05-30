@@ -18,8 +18,27 @@ async function fetchMeal(id) {
   }
 }
 
+async function fetchReviews(id) {
+  try {
+    const res = await fetch(api(`reviews/meals/${id}`), {
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      return [];
+    }
+
+    const data = await res.json();
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    console.error("Failed to fetch reviews:", error);
+    return [];
+  }
+}
+
 export default async function MealPage({ params }) {
   const meal = await fetchMeal(params.id);
+  const reviews = await fetchReviews(params.id);
 
-  return <SelectedMeal meal={meal} />;
+  return <SelectedMeal meal={meal} reviews={reviews} />;
 }

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { CalendarDays, Clock3, MapPin, Users } from "lucide-react";
+import { CalendarDays, MapPin } from "lucide-react";
 import api from "@/utils/api";
 import styles from "./MealList.module.css";
 
@@ -46,16 +46,16 @@ function MealsList() {
     <section className={styles.section}>
       <div className={styles.sectionHeader}>
         <div>
-          <p className={styles.sectionEyebrow}>Upcoming experiences</p>
-          <h2 className={styles.sectionTitle}>Book a table with confidence.</h2>
+          <p className={styles.sectionEyebrow}>Happening soon</p>
+          <h2 className={styles.sectionTitle}>Join a table that feels right.</h2>
           <p className={styles.sectionText}>
-            Smaller guest counts, clearer details, and warmer presentation make
-            every listing easier to trust at a glance.
+            See who is hosting, how full the table is, and what kind of night
+            you are stepping into before you decide to join.
           </p>
         </div>
 
         <Link href="/meals" className={styles.seeAllButton}>
-          View all meals
+          Browse experiences
         </Link>
       </div>
 
@@ -69,37 +69,40 @@ function MealsList() {
           <Link key={meal.id} href={`/meals/${meal.id}`} className={styles.recipeCard}>
             <div className={styles.imageContainer}>
               <img src={meal.image} alt={meal.title} className={styles.recipeImage} />
-              <div className={styles.priceBadge}>DKK {meal.price}</div>
             </div>
 
             <div className={styles.cardContent}>
-              <div className={styles.cardTopRow}>
-                <p className={styles.locationLine}>
-                  <MapPin className={styles.inlineIcon} />
-                  {meal.location}
-                </p>
-                <span className={styles.spotsBadge}>{meal.max_reservations} seats</span>
-              </div>
-
               <h3 className={styles.recipeName}>{meal.title}</h3>
-              <p className={styles.recipeDescription}>{meal.description}</p>
+
+              <div className={styles.trustBlock}>
+                <p className={styles.hostLine}>Hosted by {meal.host_name}</p>
+                <p className={styles.fillLine}>
+                  {meal.reserved_seats}/{meal.max_reservations} seats filled
+                </p>
+              </div>
 
               <div className={styles.recipeInfo}>
                 <div className={styles.infoItem}>
                   <CalendarDays className={styles.infoIcon} />
-                  <span>{formatDate(meal.when)}</span>
+                  <span>
+                    {formatDate(meal.when)} {" | "} {formatTime(meal.when)}
+                  </span>
                 </div>
                 <div className={styles.infoItem}>
-                  <Clock3 className={styles.infoIcon} />
-                  <span>{formatTime(meal.when)}</span>
-                </div>
-                <div className={styles.infoItem}>
-                  <Users className={styles.infoIcon} />
-                  <span>Hosted table</span>
+                  <MapPin className={styles.infoIcon} />
+                  <span>{meal.location}</span>
                 </div>
               </div>
 
-              <span className={styles.cardLink}>View details</span>
+              <p className={styles.recipeDescription}>{meal.description}</p>
+
+              <div className={styles.cardFooter}>
+                <div>
+                  <span className={styles.priceLabel}>From</span>
+                  <span className={styles.spotsBadge}>DKK {meal.price}</span>
+                </div>
+                <span className={styles.cardLink}>Find a table</span>
+              </div>
             </div>
           </Link>
         ))}

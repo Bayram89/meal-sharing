@@ -3,16 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import styles from "./AllMeals.module.css";
-import api from "@/utils/api";
-import {
-  Search,
-  Clock3,
-  Users,
-  ChefHat,
-  ArrowLeft,
-  MapPin,
-  CalendarDays,
-} from "lucide-react";
+import { Search, ChefHat, ArrowLeft, MapPin, CalendarDays } from "lucide-react";
 
 const formatDate = (dateString) =>
   new Date(dateString).toLocaleDateString("en-GB", {
@@ -40,7 +31,8 @@ export default function AllMeals({ meals }) {
       return (
         meal.title?.toLowerCase().includes(query) ||
         meal.description?.toLowerCase().includes(query) ||
-        meal.location?.toLowerCase().includes(query)
+        meal.location?.toLowerCase().includes(query) ||
+        meal.host_name?.toLowerCase().includes(query)
       );
     });
 
@@ -64,24 +56,6 @@ export default function AllMeals({ meals }) {
     setFilteredMeals(filtered);
   }, [safeMeals, search, sortKey, sortDir]);
 
-  const fetchMeals = async (searchValue, nextSortKey, nextSortDir) => {
-    try {
-      const params = [
-        searchValue ? `title=${encodeURIComponent(searchValue)}` : "",
-        `sortKey=${encodeURIComponent(nextSortKey)}`,
-        `sortDir=${encodeURIComponent(nextSortDir)}`,
-      ]
-        .filter(Boolean)
-        .join("&");
-
-      const res = await fetch(api(`meals?${params}`));
-      const data = await res.json();
-      setFilteredMeals(Array.isArray(data) ? data : []);
-    } catch (error) {
-      setFilteredMeals([]);
-    }
-  };
-
   return (
     <div className={styles.pageShell}>
       <header className={styles.header}>
@@ -92,11 +66,11 @@ export default function AllMeals({ meals }) {
           </Link>
 
           <div className={styles.headerInfo}>
-            <p className={styles.headerEyebrow}>All upcoming meals</p>
-            <h1 className={styles.title}>Choose the table that fits your night.</h1>
+            <p className={styles.headerEyebrow}>Join a table</p>
+            <h1 className={styles.title}>Dinner plans, made more personal.</h1>
             <p className={styles.subtitle}>
-              Browse by mood, neighborhood, timing, or guest count without the
-              clutter of a marketplace-style layout.
+              Find small hosted meals where the atmosphere, the people, and the
+              host matter just as much as the food.
             </p>
           </div>
         </div>
@@ -108,12 +82,9 @@ export default function AllMeals({ meals }) {
             <Search className={styles.searchIcon} />
             <input
               type="text"
-              placeholder="Search by meal, mood, or neighborhood"
+              placeholder="Search by table, host, or neighborhood"
               value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                fetchMeals(e.target.value, sortKey, sortDir);
-              }}
+              onChange={(e) => setSearch(e.target.value)}
               className={styles.searchInput}
             />
           </div>
@@ -123,10 +94,7 @@ export default function AllMeals({ meals }) {
               <span>Sort</span>
               <select
                 value={sortKey}
-                onChange={(e) => {
-                  setSortKey(e.target.value);
-                  fetchMeals(search, e.target.value, sortDir);
-                }}
+                onChange={(e) => setSortKey(e.target.value)}
                 className={styles.select}
               >
                 <option value="when">Date</option>
@@ -139,10 +107,7 @@ export default function AllMeals({ meals }) {
               <span>Order</span>
               <select
                 value={sortDir}
-                onChange={(e) => {
-                  setSortDir(e.target.value);
-                  fetchMeals(search, sortKey, e.target.value);
-                }}
+                onChange={(e) => setSortDir(e.target.value)}
                 className={styles.select}
               >
                 <option value="asc">Ascending</option>
@@ -153,7 +118,7 @@ export default function AllMeals({ meals }) {
         </section>
 
         <div className={styles.resultsCount}>
-          <p>{filteredMeals.length} curated meals available</p>
+          <p>{filteredMeals.length} tables open for booking</p>
         </div>
 
         <div className={styles.mealsGrid}>
@@ -161,33 +126,39 @@ export default function AllMeals({ meals }) {
             <Link key={meal.id} href={`/meals/${meal.id}`} className={styles.mealCard}>
               <div className={styles.imageContainer}>
                 <img src={meal.image} alt={meal.title} className={styles.mealImage} />
-                <div className={styles.priceBadge}>DKK {meal.price}</div>
               </div>
 
               <div className={styles.cardContent}>
-                <div className={styles.cardMeta}>
-                  <span className={styles.metaLine}>
-                    <MapPin className={styles.infoIcon} />
-                    {meal.location}
-                  </span>
-                  <span className={styles.metaBadge}>{meal.max_reservations} guests</span>
-                </div>
                 <h3 className={styles.mealName}>{meal.title}</h3>
-                <p className={styles.mealDescription}>{meal.description}</p>
+
+                <div className={styles.cardMeta}>
+                  <p className={styles.hostLine}>Hosted by {meal.host_name}</p>
+                  <p className={styles.fillLine}>
+                    {meal.reserved_seats}/{meal.max_reservations} seats filled
+                  </p>
+                </div>
 
                 <div className={styles.mealInfo}>
                   <div className={styles.infoItem}>
                     <CalendarDays className={styles.infoIcon} />
-                    <span>{formatDate(meal.when)}</span>
+                    <span>
+                      {formatDate(meal.when)} {" | "} {formatTime(meal.when)}
+                    </span>
                   </div>
                   <div className={styles.infoItem}>
-                    <Clock3 className={styles.infoIcon} />
-                    <span>{formatTime(meal.when)}</span>
+                    <MapPin className={styles.infoIcon} />
+                    <span>{meal.location}</span>
                   </div>
-                  <div className={styles.infoItem}>
-                    <Users className={styles.infoIcon} />
-                    <span>Hosted experience</span>
+                </div>
+
+                <p className={styles.mealDescription}>{meal.description}</p>
+
+                <div className={styles.cardFooter}>
+                  <div>
+                    <span className={styles.priceLabel}>From</span>
+                    <span className={styles.metaBadge}>DKK {meal.price}</span>
                   </div>
+                  <span className={styles.cardLink}>See what this table is like</span>
                 </div>
               </div>
             </Link>

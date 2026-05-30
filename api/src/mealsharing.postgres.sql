@@ -10,6 +10,7 @@ CREATE TABLE meal (
   description TEXT,
   location VARCHAR(255),
   image VARCHAR(500),
+  host_name VARCHAR(255),
   "when" TIMESTAMP NOT NULL,
   max_reservations INTEGER,
   price NUMERIC(10, 2),
@@ -35,17 +36,17 @@ CREATE TABLE review (
   created_date DATE
 );
 
-INSERT INTO meal (id, title, description, location, image, "when", max_reservations, price, created_date) VALUES
-  (1, 'Nordic Supper Club', 'A six-course seasonal tasting menu with rye crisps, smoked butter, and candlelit communal tables.', 'Vesterbro, Copenhagen', 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1200&q=80', '2026-06-12 19:00:00', 16, 42.00, '2026-05-20'),
-  (2, 'Harbor Seafood Night', 'Fresh oysters, grilled cod, and lemon herb potatoes inspired by the Copenhagen waterfront.', 'Nordhavn, Copenhagen', 'https://images.unsplash.com/photo-1559847844-5315695dadae?auto=format&fit=crop&w=1200&q=80', '2026-06-19 18:30:00', 18, 48.00, '2026-05-20'),
-  (3, 'Rooftop Taco Social', 'Slow-cooked beef tacos, charred corn, and bright salsas served with skyline views and music.', 'Norrebro, Copenhagen', 'https://images.unsplash.com/photo-1552332386-f8dd00dc2f85?auto=format&fit=crop&w=1200&q=80', '2026-06-26 19:30:00', 24, 24.00, '2026-05-21'),
-  (4, 'Garden Brunch Feast', 'An elegant weekend brunch with shakshuka, cardamom buns, fresh berries, and pour-over coffee.', 'Frederiksberg, Copenhagen', 'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=1200&q=80', '2026-07-05 11:00:00', 20, 28.00, '2026-05-21'),
-  (5, 'Fire & Smoke BBQ Night', 'Oak-smoked brisket, grilled vegetables, and house pickles served family-style at long wooden tables.', 'Refshaleoen, Copenhagen', 'https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?auto=format&fit=crop&w=1200&q=80', '2026-07-17 18:00:00', 30, 36.00, '2026-05-22'),
-  (6, 'Pasta & Natural Wine', 'Handmade tagliatelle, slow braised mushroom ragu, and a relaxed natural wine pairing.', 'Christianshavn, Copenhagen', 'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=1200&q=80', '2026-08-08 19:00:00', 14, 34.00, '2026-05-22'),
-  (7, 'Coastal Green Table', 'A refined vegetarian dinner with grilled courgettes, whipped feta, herbs, and summer greens.', 'Osterbro, Copenhagen', 'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1200&q=80', '2026-08-21 18:30:00', 18, 31.00, '2026-05-23'),
-  (8, 'Sourdough Pizza Night', 'Wood-fired pizzas, burrata, and crisp salads in a cozy neighborhood studio kitchen.', 'Amager, Copenhagen', 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1200&q=80', '2026-09-04 19:00:00', 22, 26.00, '2026-05-23'),
-  (9, 'Candlelit Curry Evening', 'Fragrant coconut curry, warm flatbread, and spiced rice served in an intimate home setting.', 'Valby, Copenhagen', 'https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?auto=format&fit=crop&w=1200&q=80', '2026-09-18 18:30:00', 16, 29.00, '2026-05-24'),
-  (10, 'Dessert Atelier', 'A plated dessert experience featuring citrus tart, dark chocolate mousse, and espresso service.', 'Indre By, Copenhagen', 'https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=1200&q=80', '2026-10-02 20:00:00', 12, 22.00, '2026-05-24');
+INSERT INTO meal (id, title, description, location, image, host_name, "when", max_reservations, price, created_date) VALUES
+  (1, 'Nordic Supper Club', 'A relaxed six-course dinner for people who enjoy seasonal food, good conversation, and meeting new faces.', 'Vesterbro, Copenhagen', 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1200&q=80', 'Anna', '2026-06-12 19:00:00', 16, 42.00, '2026-05-20'),
+  (2, 'Harbor Seafood Night', 'Fresh seafood, shared tables, and a laid-back evening inspired by Copenhagen''s waterfront culture.', 'Nordhavn, Copenhagen', 'https://images.unsplash.com/photo-1559847844-5315695dadae?auto=format&fit=crop&w=1200&q=80', 'Michael', '2026-06-19 18:30:00', 18, 48.00, '2026-05-20'),
+  (3, 'Rooftop Taco Social', 'Casual tacos, city views, and a friendly atmosphere designed for meeting people over great food.', 'Norrebro, Copenhagen', 'https://images.unsplash.com/photo-1552332386-f8dd00dc2f85?auto=format&fit=crop&w=1200&q=80', 'Sara', '2026-06-26 19:30:00', 24, 24.00, '2026-05-21'),
+  (4, 'Garden Brunch Feast', 'A slower weekend table with brunch favorites, good coffee, and an easy way to spend a Sunday with others.', 'Frederiksberg, Copenhagen', 'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=1200&q=80', 'Clara', '2026-07-05 11:00:00', 20, 28.00, '2026-05-21'),
+  (5, 'Fire & Smoke BBQ Night', 'A social dinner with smoky comfort food, long tables, and the kind of easy atmosphere people settle into quickly.', 'Refshaleoen, Copenhagen', 'https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?auto=format&fit=crop&w=1200&q=80', 'Jonas', '2026-07-17 18:00:00', 30, 36.00, '2026-05-22'),
+  (6, 'Pasta & Natural Wine', 'Fresh pasta, low-intervention wine, and a smaller table for people who like evenings that feel calm and thoughtful.', 'Christianshavn, Copenhagen', 'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=1200&q=80', 'Elena', '2026-08-08 19:00:00', 14, 34.00, '2026-05-22'),
+  (7, 'Coastal Green Table', 'A vegetarian dinner built around shared plates, seasonal ingredients, and a welcoming group setting.', 'Osterbro, Copenhagen', 'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1200&q=80', 'Maja', '2026-08-21 18:30:00', 18, 31.00, '2026-05-23'),
+  (8, 'Sourdough Pizza Night', 'Wood-fired pizza, easy conversation, and a neighborhood-style evening that feels more like joining friends than attending an event.', 'Amager, Copenhagen', 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1200&q=80', 'Luca', '2026-09-04 19:00:00', 22, 26.00, '2026-05-23'),
+  (9, 'Candlelit Curry Evening', 'A warm, intimate dinner with shared dishes and a softer atmosphere for people who want a slower night out.', 'Valby, Copenhagen', 'https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?auto=format&fit=crop&w=1200&q=80', 'Fatima', '2026-09-18 18:30:00', 16, 29.00, '2026-05-24'),
+  (10, 'Dessert Atelier', 'A small dessert-focused gathering where plated sweets, coffee, and conversation carry the whole evening.', 'Indre By, Copenhagen', 'https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=1200&q=80', 'Freja', '2026-10-02 20:00:00', 12, 22.00, '2026-05-24');
 
 INSERT INTO reservation (id, number_of_guests, meal_id, created_date, contact_phonenumber, contact_name, contact_email) VALUES
   (1, 2, 1, '2026-05-25', '20112233', 'Sofia Jensen', 'sofia.jensen@example.com'),
