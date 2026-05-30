@@ -20,8 +20,8 @@ function HomePage() {
               Browse experiences
             </Link>
             <p className="heroNote">
-              Real people, real tables, and enough detail to know what kind of
-              evening you are saying yes to.
+              Small dining experiences hosted by locals, chefs, and food lovers
+              across Copenhagen.
             </p>
           </div>
         </div>
@@ -48,14 +48,20 @@ function HomePage() {
           <div className="heroStatRow">
             <div className="statCard">
               <span className="statValue">10</span>
-              <span className="statLabel">Upcoming gatherings</span>
+              <span className="statLabel">upcoming tables</span>
             </div>
             <div className="statCard">
-              <span className="statValue">5.0</span>
-              <span className="statLabel">
-                <Star className="inlineStar" />
-                guest experience
+              <span className="statValue">42</span>
+              <span className="statLabel">guests joined this month</span>
+            </div>
+            <div className="statCard">
+              <span className="statValue">4.8</span>
+              <span className="statStars" aria-label="Average guest rating 4.8 out of 5">
+                {Array.from({ length: 5 }).map((_, index) => (
+                  <Star key={index} className="statStarIcon" fill="currentColor" />
+                ))}
               </span>
+              <span className="statLabel">average guest rating</span>
             </div>
           </div>
         </div>

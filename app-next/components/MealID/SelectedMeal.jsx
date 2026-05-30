@@ -74,6 +74,7 @@ export default function SelectedMeal({ meal, reviews = [] }) {
     availableReservations === 1
       ? "1 seat left"
       : `${availableReservations} seats left`;
+  const hostRating = Number(meal.host_rating ?? averageRating).toFixed(1);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -199,6 +200,26 @@ export default function SelectedMeal({ meal, reviews = [] }) {
                     {averageRating}
                   </span>
                   <span className={styles.trustLabel}>{reviewSummaryLabel}</span>
+                </div>
+              </div>
+            </section>
+
+            <section className={styles.hostPanel}>
+              <div className={styles.hostPanelHeader}>
+                <p className={styles.hostEyebrow}>Hosted by</p>
+                <h2 className={styles.hostName}>{meal.host_name}</h2>
+              </div>
+              <p className={styles.hostTitle}>{meal.host_title}</p>
+              <p className={styles.hostBio}>{meal.host_bio}</p>
+
+              <div className={styles.hostMetaRow}>
+                <div className={styles.hostMetaCard}>
+                  <span className={styles.hostMetaValue}>{meal.host_tables_count}</span>
+                  <span className={styles.hostMetaLabel}>previous tables</span>
+                </div>
+                <div className={styles.hostMetaCard}>
+                  <span className={styles.hostMetaValue}>{hostRating}</span>
+                  <span className={styles.hostMetaLabel}>average host rating</span>
                 </div>
               </div>
             </section>
