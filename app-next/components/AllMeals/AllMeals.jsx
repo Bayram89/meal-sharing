@@ -21,8 +21,7 @@ const formatTime = (dateString) =>
 export default function AllMeals({ meals }) {
   const safeMeals = Array.isArray(meals) ? meals : [];
   const [search, setSearch] = useState("");
-  const [sortKey, setSortKey] = useState("when");
-  const [sortDir, setSortDir] = useState("asc");
+  const [sortKey, setSortKey] = useState("soonest");
   const [filteredMeals, setFilteredMeals] = useState(safeMeals);
 
   useEffect(() => {
@@ -37,24 +36,19 @@ export default function AllMeals({ meals }) {
     });
 
     filtered = [...filtered].sort((a, b) => {
-      let aValue = a[sortKey];
-      let bValue = b[sortKey];
-
-      if (sortKey === "price" || sortKey === "max_reservations") {
-        aValue = Number(aValue);
-        bValue = Number(bValue);
+      if (sortKey === "lowest-price") {
+        return Number(a.price) - Number(b.price);
       }
 
-      if (sortKey === "when") {
-        aValue = new Date(aValue).getTime();
-        bValue = new Date(bValue).getTime();
+      if (sortKey === "small-table") {
+        return Number(a.max_reservations) - Number(b.max_reservations);
       }
 
-      return sortDir === "asc" ? aValue - bValue : bValue - aValue;
+      return new Date(a.when).getTime() - new Date(b.when).getTime();
     });
 
     setFilteredMeals(filtered);
-  }, [safeMeals, search, sortKey, sortDir]);
+  }, [safeMeals, search, sortKey]);
 
   return (
     <div className={styles.pageShell}>
@@ -91,27 +85,15 @@ export default function AllMeals({ meals }) {
 
           <div className={styles.sortSection}>
             <label className={styles.selectGroup}>
-              <span>Sort</span>
+              <span>Sort by</span>
               <select
                 value={sortKey}
                 onChange={(e) => setSortKey(e.target.value)}
                 className={styles.select}
               >
-                <option value="when">Date</option>
-                <option value="price">Price</option>
-                <option value="max_reservations">Guest count</option>
-              </select>
-            </label>
-
-            <label className={styles.selectGroup}>
-              <span>Order</span>
-              <select
-                value={sortDir}
-                onChange={(e) => setSortDir(e.target.value)}
-                className={styles.select}
-              >
-                <option value="asc">Ascending</option>
-                <option value="desc">Descending</option>
+                <option value="soonest">Soonest</option>
+                <option value="lowest-price">Lowest price</option>
+                <option value="small-table">Smaller tables</option>
               </select>
             </label>
           </div>
@@ -170,7 +152,7 @@ export default function AllMeals({ meals }) {
             <ChefHat className={styles.noResultsIcon} />
             <h3 className={styles.noResultsTitle}>No meals match that search</h3>
             <p className={styles.noResultsText}>
-              Try a different keyword, neighborhood, or sort order.
+              Try a different keyword, neighborhood, or table type.
             </p>
           </div>
         )}
