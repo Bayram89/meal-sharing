@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { CalendarDays, MapPin } from "lucide-react";
+import { ArrowLeft, ArrowRight, CalendarDays, MapPin } from "lucide-react";
 import api from "@/utils/api";
 import styles from "./MealList.module.css";
 
@@ -22,6 +22,7 @@ const formatTime = (dateString) =>
 function MealsList() {
   const [meals, setMeals] = useState([]);
   const [error, setError] = useState("");
+  const sliderRef = useRef(null);
 
   useEffect(() => {
     fetch(api("meals?limit=6"))
@@ -42,21 +43,54 @@ function MealsList() {
       });
   }, []);
 
+  const scrollSlider = (direction) => {
+    if (!sliderRef.current) {
+      return;
+    }
+
+    const amount = sliderRef.current.clientWidth * 0.82;
+    sliderRef.current.scrollBy({
+      left: direction === "next" ? amount : -amount,
+      behavior: "smooth",
+    });
+  };
+
   return (
     <section className={styles.section}>
       <div className={styles.sectionHeader}>
         <div>
-          <p className={styles.sectionEyebrow}>Happening soon</p>
-          <h2 className={styles.sectionTitle}>Join a table that feels right.</h2>
+          <p className={styles.sectionEyebrow}>Featured tables this week</p>
+          <h2 className={styles.sectionTitle}>A few standout evenings to start with.</h2>
           <p className={styles.sectionText}>
-            See who is hosting, how full the table is, and what kind of night
-            you are stepping into before you decide to join.
+            These are the meals people notice first. Distinct hosts, stronger
+            atmosphere, and tables that feel worth planning your evening around.
           </p>
         </div>
 
-        <Link href="/meals" className={styles.seeAllButton}>
-          Browse experiences
-        </Link>
+        <div className={styles.headerActions}>
+          <div className={styles.sliderControls}>
+            <button
+              type="button"
+              className={styles.sliderButton}
+              onClick={() => scrollSlider("prev")}
+              aria-label="Show previous featured meals"
+            >
+              <ArrowLeft className={styles.sliderIcon} />
+            </button>
+            <button
+              type="button"
+              className={styles.sliderButton}
+              onClick={() => scrollSlider("next")}
+              aria-label="Show next featured meals"
+            >
+              <ArrowRight className={styles.sliderIcon} />
+            </button>
+          </div>
+
+          <Link href="/meals" className={styles.seeAllButton}>
+            Browse experiences
+          </Link>
+        </div>
       </div>
 
       {error ? <p className={styles.feedback}>{error}</p> : null}
@@ -64,7 +98,7 @@ function MealsList() {
         <p className={styles.feedback}>Loading upcoming meals...</p>
       ) : null}
 
-      <div className={styles.recipeGrid}>
+      <div ref={sliderRef} className={styles.recipeGrid}>
         {meals.map((meal) => (
           <Link key={meal.id} href={`/meals/${meal.id}`} className={styles.recipeCard}>
             <div className={styles.imageContainer}>
