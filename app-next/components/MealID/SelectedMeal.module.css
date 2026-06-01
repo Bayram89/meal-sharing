@@ -69,6 +69,13 @@
   height: 18px;
 }
 
+.priceCurrency {
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .contentSection {
   padding: 28px;
 }

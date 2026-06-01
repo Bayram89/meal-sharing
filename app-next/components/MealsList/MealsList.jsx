@@ -19,6 +19,15 @@ const formatTime = (dateString) =>
     minute: "2-digit",
   });
 
+const featuredOrder = [
+  "Midnight Tasting Bowl",
+  "Mint Garden Lunch",
+  "Coastal Catch Evening",
+  "Ember Table Supper",
+  "Wild Mushroom Gathering",
+  "Velvet Sea Table",
+];
+
 function MealsList() {
   const [meals, setMeals] = useState([]);
   const [error, setError] = useState("");
@@ -33,7 +42,19 @@ function MealsList() {
         return res.json();
       })
       .then((data) => {
-        setMeals(Array.isArray(data) ? data : []);
+        const safeMeals = Array.isArray(data) ? data : [];
+        const sortedMeals = [...safeMeals].sort((a, b) => {
+          const aIndex = featuredOrder.indexOf(a.title);
+          const bIndex = featuredOrder.indexOf(b.title);
+
+          if (aIndex === -1 && bIndex === -1) return 0;
+          if (aIndex === -1) return 1;
+          if (bIndex === -1) return -1;
+
+          return aIndex - bIndex;
+        });
+
+        setMeals(sortedMeals);
         setError("");
       })
       .catch((err) => {

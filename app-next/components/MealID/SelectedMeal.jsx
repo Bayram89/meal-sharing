@@ -8,7 +8,6 @@ import {
   Users,
   MapPin,
   CalendarDays,
-  DollarSign,
   ShieldCheck,
   Star,
 } from "lucide-react";
@@ -169,7 +168,7 @@ export default function SelectedMeal({ meal, reviews = [] }) {
           <div className={styles.imageSection}>
             <img src={meal.image} alt={meal.title} className={styles.mealImage} />
             <div className={styles.priceBadge}>
-              <DollarSign className={styles.priceIcon} />
+              <span className={styles.priceCurrency}>DKK</span>
               {meal.price}
             </div>
           </div>
