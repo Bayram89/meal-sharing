@@ -28,19 +28,19 @@ function HomePage() {
 
         <div className="heroDetails">
           <div className="heroCard">
-            <div className="heroCardLabel">Why people trust it</div>
+            <div className="heroCardLabel">Why people keep coming back</div>
             <ul className="valueList">
               <li>
                 <ShieldCheck className="valueIcon" />
-                Hosts are visible before you book
+                You know who you'll be dining with
               </li>
               <li>
                 <CalendarDays className="valueIcon" />
-                Seat availability feels real, not vague
+                Know exactly how many seats are available
               </li>
               <li>
                 <MapPin className="valueIcon" />
-                Each table has its own mood and setting
+                Every table offers a different experience
               </li>
             </ul>
           </div>
