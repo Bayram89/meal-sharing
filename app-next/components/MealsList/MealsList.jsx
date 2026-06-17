@@ -64,6 +64,33 @@ function MealsList() {
       });
   }, []);
 
+  useEffect(() => {
+    const slider = sliderRef.current;
+
+    if (!slider || meals.length === 0) {
+      return undefined;
+    }
+
+    const autoSlide = window.setInterval(() => {
+      const maxScrollLeft = slider.scrollWidth - slider.clientWidth;
+
+      if (slider.scrollLeft >= maxScrollLeft - 8) {
+        slider.scrollTo({
+          left: 0,
+          behavior: "smooth",
+        });
+        return;
+      }
+
+      slider.scrollBy({
+        left: slider.clientWidth * 0.82,
+        behavior: "smooth",
+      });
+    }, 3200);
+
+    return () => window.clearInterval(autoSlide);
+  }, [meals]);
+
   const scrollSlider = (direction) => {
     if (!sliderRef.current) {
       return;
