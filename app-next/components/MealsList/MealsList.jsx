@@ -32,6 +32,8 @@ function MealsList() {
   const [meals, setMeals] = useState([]);
   const [error, setError] = useState("");
   const sliderRef = useRef(null);
+  const animationFrameRef = useRef(null);
+  const isPausedRef = useRef(false);
 
   useEffect(() => {
     fetch(api("meals?limit=6"))
@@ -71,24 +73,27 @@ function MealsList() {
       return undefined;
     }
 
-    const autoSlide = window.setInterval(() => {
-      const maxScrollLeft = slider.scrollWidth - slider.clientWidth;
+    const step = () => {
+      const loopPoint = slider.scrollWidth / 2;
 
-      if (slider.scrollLeft >= maxScrollLeft - 8) {
-        slider.scrollTo({
-          left: 0,
-          behavior: "smooth",
-        });
-        return;
+      if (!isPausedRef.current) {
+        slider.scrollLeft += 0.45;
+
+        if (slider.scrollLeft >= loopPoint) {
+          slider.scrollLeft = 0;
+        }
       }
 
-      slider.scrollBy({
-        left: slider.clientWidth * 0.82,
-        behavior: "smooth",
-      });
-    }, 3200);
+      animationFrameRef.current = window.requestAnimationFrame(step);
+    };
 
-    return () => window.clearInterval(autoSlide);
+    animationFrameRef.current = window.requestAnimationFrame(step);
+
+    return () => {
+      if (animationFrameRef.current) {
+        window.cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
   }, [meals]);
 
   const scrollSlider = (direction) => {
@@ -102,6 +107,8 @@ function MealsList() {
       behavior: "smooth",
     });
   };
+
+  const marqueeMeals = meals.length > 0 ? [...meals, ...meals] : [];
 
   return (
     <section className={styles.section}>
@@ -146,9 +153,18 @@ function MealsList() {
         <p className={styles.feedback}>Loading upcoming meals...</p>
       ) : null}
 
-      <div ref={sliderRef} className={styles.recipeGrid}>
-        {meals.map((meal) => (
-          <Link key={meal.id} href={`/meals/${meal.id}`} className={styles.recipeCard}>
+      <div
+        ref={sliderRef}
+        className={styles.recipeGrid}
+        onMouseEnter={() => {
+          isPausedRef.current = true;
+        }}
+        onMouseLeave={() => {
+          isPausedRef.current = false;
+        }}
+      >
+        {marqueeMeals.map((meal, index) => (
+          <Link key={`${meal.id}-${index}`} href={`/meals/${meal.id}`} className={styles.recipeCard}>
             <div className={styles.imageContainer}>
               <img src={meal.image} alt={meal.title} className={styles.recipeImage} />
             </div>
