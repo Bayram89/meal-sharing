@@ -52,7 +52,7 @@ function HomePage() {
             </div>
             <div className="statCard">
               <span className="statValue">42</span>
-              <span className="statLabel">guests joined this month</span>
+              <span className="statLabel">guests joined recently</span>
             </div>
             <div className="statCard">
               <span className="statValue">4.8</span>
