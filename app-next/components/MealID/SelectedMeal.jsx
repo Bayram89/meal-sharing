@@ -158,7 +158,7 @@ export default function SelectedMeal({ meal, reviews = [] }) {
         <div className={styles.headerContent}>
           <Link href="/meals" className={styles.backButton}>
             <ArrowLeft className={styles.backIcon} />
-            Back to all meals
+            Back to meals
           </Link>
         </div>
       </header>
