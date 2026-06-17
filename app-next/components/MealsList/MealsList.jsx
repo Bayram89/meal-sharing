@@ -83,8 +83,8 @@ function MealsList() {
           <p className={styles.sectionEyebrow}>Featured tables this week</p>
           <h2 className={styles.sectionTitle}>A few standout evenings to start with.</h2>
           <p className={styles.sectionText}>
-            These are the most popular tables happening around Copenhagen this
-            week.
+            A quick look at some of the most popular tables in Copenhagen right
+            now.
           </p>
         </div>
 
