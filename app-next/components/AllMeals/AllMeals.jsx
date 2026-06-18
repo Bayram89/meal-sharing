@@ -61,10 +61,8 @@ export default function AllMeals({ meals }) {
 
           <div className={styles.headerInfo}>
             <p className={styles.headerEyebrow}>Join a table</p>
-            <h1 className={styles.title}>Dinner plans, made more personal.</h1>
             <p className={styles.subtitle}>
-              Find small hosted meals where the atmosphere, the people, and the
-              host matter just as much as the food.
+              Find small-group dining experiences hosted by local chefs, home cooks, and food enthusiasts.
             </p>
           </div>
         </div>
