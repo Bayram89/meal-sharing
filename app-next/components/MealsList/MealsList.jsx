@@ -31,9 +31,11 @@ const featuredOrder = [
 function MealsList() {
   const [meals, setMeals] = useState([]);
   const [error, setError] = useState("");
-  const sliderRef = useRef(null);
-  const intervalRef = useRef(null);
+  const viewportRef = useRef(null);
+  const trackRef = useRef(null);
+  const animationFrameRef = useRef(null);
   const isPausedRef = useRef(false);
+  const offsetRef = useRef(0);
 
   useEffect(() => {
     fetch(api("meals?limit=6"))
@@ -67,41 +69,61 @@ function MealsList() {
   }, []);
 
   useEffect(() => {
-    const slider = sliderRef.current;
+    const viewport = viewportRef.current;
+    const track = trackRef.current;
 
-    if (!slider || meals.length === 0) {
+    if (!viewport || !track || meals.length === 0) {
       return undefined;
     }
 
-    intervalRef.current = window.setInterval(() => {
-      const loopPoint = slider.scrollWidth / 2;
+    const step = () => {
+      const loopPoint = track.scrollWidth / 2;
 
       if (!isPausedRef.current) {
-        slider.scrollLeft += 1;
+        offsetRef.current -= 0.6;
 
-        if (slider.scrollLeft >= loopPoint) {
-          slider.scrollLeft = 0;
+        if (Math.abs(offsetRef.current) >= loopPoint) {
+          offsetRef.current += loopPoint;
         }
+
+        track.style.transform = `translate3d(${offsetRef.current}px, 0, 0)`;
       }
-    }, 24);
+
+      animationFrameRef.current = window.requestAnimationFrame(step);
+    };
+
+    track.style.transform = "translate3d(0px, 0, 0)";
+    animationFrameRef.current = window.requestAnimationFrame(step);
 
     return () => {
-      if (intervalRef.current) {
-        window.clearInterval(intervalRef.current);
+      if (animationFrameRef.current) {
+        window.cancelAnimationFrame(animationFrameRef.current);
       }
     };
   }, [meals]);
 
   const scrollSlider = (direction) => {
-    if (!sliderRef.current) {
+    const viewport = viewportRef.current;
+    const track = trackRef.current;
+
+    if (!viewport || !track) {
       return;
     }
 
-    const amount = sliderRef.current.clientWidth * 0.82;
-    sliderRef.current.scrollBy({
-      left: direction === "next" ? amount : -amount,
-      behavior: "smooth",
-    });
+    const loopPoint = track.scrollWidth / 2;
+    const amount = viewport.clientWidth * 0.82;
+
+    offsetRef.current += direction === "next" ? -amount : amount;
+
+    if (Math.abs(offsetRef.current) >= loopPoint) {
+      offsetRef.current += direction === "next" ? loopPoint : -loopPoint;
+    }
+
+    if (offsetRef.current > 0) {
+      offsetRef.current -= loopPoint;
+    }
+
+    track.style.transform = `translate3d(${offsetRef.current}px, 0, 0)`;
   };
 
   const marqueeMeals = meals.length > 0 ? [...meals, ...meals] : [];
@@ -150,8 +172,8 @@ function MealsList() {
       ) : null}
 
       <div
-        ref={sliderRef}
-        className={styles.recipeGrid}
+        ref={viewportRef}
+        className={styles.recipeViewport}
         onMouseEnter={() => {
           isPausedRef.current = true;
         }}
@@ -159,47 +181,49 @@ function MealsList() {
           isPausedRef.current = false;
         }}
       >
-        {marqueeMeals.map((meal, index) => (
-          <Link key={`${meal.id}-${index}`} href={`/meals/${meal.id}`} className={styles.recipeCard}>
-            <div className={styles.imageContainer}>
-              <img src={meal.image} alt={meal.title} className={styles.recipeImage} />
-            </div>
-
-            <div className={styles.cardContent}>
-              <h3 className={styles.recipeName}>{meal.title}</h3>
-
-              <div className={styles.trustBlock}>
-                <p className={styles.hostLine}>Hosted by {meal.host_name}</p>
-                <p className={styles.fillLine}>
-                  {meal.reserved_seats}/{meal.max_reservations} seats filled
-                </p>
+        <div ref={trackRef} className={styles.recipeTrack}>
+          {marqueeMeals.map((meal, index) => (
+            <Link key={`${meal.id}-${index}`} href={`/meals/${meal.id}`} className={styles.recipeCard}>
+              <div className={styles.imageContainer}>
+                <img src={meal.image} alt={meal.title} className={styles.recipeImage} />
               </div>
 
-              <div className={styles.recipeInfo}>
-                <div className={styles.infoItem}>
-                  <CalendarDays className={styles.infoIcon} />
-                  <span>
-                    {formatDate(meal.when)} {" | "} {formatTime(meal.when)}
-                  </span>
+              <div className={styles.cardContent}>
+                <h3 className={styles.recipeName}>{meal.title}</h3>
+
+                <div className={styles.trustBlock}>
+                  <p className={styles.hostLine}>Hosted by {meal.host_name}</p>
+                  <p className={styles.fillLine}>
+                    {meal.reserved_seats}/{meal.max_reservations} seats filled
+                  </p>
                 </div>
-                <div className={styles.infoItem}>
-                  <MapPin className={styles.infoIcon} />
-                  <span>{meal.location}</span>
+
+                <div className={styles.recipeInfo}>
+                  <div className={styles.infoItem}>
+                    <CalendarDays className={styles.infoIcon} />
+                    <span>
+                      {formatDate(meal.when)} {" | "} {formatTime(meal.when)}
+                    </span>
+                  </div>
+                  <div className={styles.infoItem}>
+                    <MapPin className={styles.infoIcon} />
+                    <span>{meal.location}</span>
+                  </div>
+                </div>
+
+                <p className={styles.recipeDescription}>{meal.description}</p>
+
+                <div className={styles.cardFooter}>
+                  <div>
+                    <span className={styles.priceLabel}>From</span>
+                    <span className={styles.spotsBadge}>DKK {meal.price}</span>
+                  </div>
+                  <span className={styles.cardLink}>Find a table</span>
                 </div>
               </div>
-
-              <p className={styles.recipeDescription}>{meal.description}</p>
-
-              <div className={styles.cardFooter}>
-                <div>
-                  <span className={styles.priceLabel}>From</span>
-                  <span className={styles.spotsBadge}>DKK {meal.price}</span>
-                </div>
-                <span className={styles.cardLink}>Find a table</span>
-              </div>
-            </div>
-          </Link>
-        ))}
+            </Link>
+          ))}
+        </div>
       </div>
     </section>
   );

@@ -95,31 +95,29 @@
   height: 18px;
 }
 
-.recipeGrid {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(320px, 360px);
-  gap: 22px;
+.recipeViewport {
   margin-top: 18px;
-  overflow-x: auto;
+  overflow: hidden;
   padding-bottom: 8px;
-  scroll-snap-type: x proximity;
-  scrollbar-width: none;
 }
 
-.recipeGrid::-webkit-scrollbar {
-  display: none;
+.recipeTrack {
+  display: flex;
+  gap: 22px;
+  width: max-content;
+  will-change: transform;
 }
 
 .recipeCard {
   display: flex;
   flex-direction: column;
+  flex: 0 0 auto;
+  width: min(360px, calc(100vw - 96px));
   overflow: hidden;
   border: 1px solid var(--color-border);
   border-radius: 22px;
   background: var(--color-card);
   transition: transform 0.24s ease, box-shadow 0.24s ease, border-color 0.24s ease;
-  scroll-snap-align: start;
 }
 
 .recipeCard:hover {
@@ -243,8 +241,8 @@
 }
 
 @media (max-width: 1024px) {
-  .recipeGrid {
-    grid-auto-columns: minmax(300px, 340px);
+  .recipeCard {
+    width: min(340px, calc(100vw - 88px));
   }
 }
 
@@ -263,7 +261,7 @@
     justify-content: space-between;
   }
 
-  .recipeGrid {
-    grid-auto-columns: minmax(280px, 88vw);
+  .recipeCard {
+    width: min(88vw, 300px);
   }
 }
