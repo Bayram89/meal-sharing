@@ -32,7 +32,7 @@ function MealsList() {
   const [meals, setMeals] = useState([]);
   const [error, setError] = useState("");
   const sliderRef = useRef(null);
-  const animationFrameRef = useRef(null);
+  const intervalRef = useRef(null);
   const isPausedRef = useRef(false);
 
   useEffect(() => {
@@ -73,25 +73,21 @@ function MealsList() {
       return undefined;
     }
 
-    const step = () => {
+    intervalRef.current = window.setInterval(() => {
       const loopPoint = slider.scrollWidth / 2;
 
       if (!isPausedRef.current) {
-        slider.scrollLeft += 0.45;
+        slider.scrollLeft += 1;
 
         if (slider.scrollLeft >= loopPoint) {
           slider.scrollLeft = 0;
         }
       }
-
-      animationFrameRef.current = window.requestAnimationFrame(step);
-    };
-
-    animationFrameRef.current = window.requestAnimationFrame(step);
+    }, 24);
 
     return () => {
-      if (animationFrameRef.current) {
-        window.cancelAnimationFrame(animationFrameRef.current);
+      if (intervalRef.current) {
+        window.clearInterval(intervalRef.current);
       }
     };
   }, [meals]);
