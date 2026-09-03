@@ -6,6 +6,8 @@ import MealsList from "@/components/MealsList/MealsList";
 function HomePage() {
   return (
     <div className="homepageShell">
+      <MealsList />
+
       <section className="heroPanel">
         <div className="heroCopy">
           <p className="eyebrow">Social dining in Copenhagen</p>
@@ -66,8 +68,6 @@ function HomePage() {
           </div>
         </div>
       </section>
-
-      <MealsList />
     </div>
   );
 }
